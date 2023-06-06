@@ -1,0 +1,671 @@
+import 'package:devide_manager/object/BrandObject.dart';
+import 'package:devide_manager/object/ConfigurationDetailsObject.dart';
+import 'package:devide_manager/object/ConfigurationSpecificationObject.dart';
+import 'package:devide_manager/object/DeviceObject.dart';
+import 'package:devide_manager/object/SupplierObject.dart';
+import 'package:devide_manager/provider/api_Brand.dart';
+import 'package:devide_manager/object/FacultyOject.dart';
+import 'package:devide_manager/object/TeacherInformationObject.dart';
+import 'package:devide_manager/provider/api_Configuration_Details.dart';
+import 'package:devide_manager/provider/api_Confuguration_Specification.dart';
+import 'package:devide_manager/provider/api_Device.dart';
+import 'package:devide_manager/provider/api_Faculties.dart';
+import 'package:devide_manager/provider/api_Supplier.dart';
+import 'package:devide_manager/provider/api_Teacher_Information.dart';
+import 'package:devide_manager/provider/share_preferences.dart';
+import 'package:devide_manager/ui/Brand.dart';
+import 'package:devide_manager/ui/Configuration.dart';
+import 'package:devide_manager/ui/Devices.dart';
+import 'package:devide_manager/ui/Login.dart';
+import 'package:devide_manager/ui/Faculties.dart';
+import 'package:devide_manager/ui/User.dart';
+import 'package:devide_manager/widget/GetTypeOfDevice.dart';
+import 'package:devide_manager/widget/widget.dart';
+import 'package:devide_manager/object/TypeOfDeviceObject.dart';
+import 'package:devide_manager/provider/api_Type_Of_Device.dart';
+import 'package:devide_manager/object/ConfigurationObject.dart';
+import 'package:devide_manager/provider/api_Configuration.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'QR_Code_Scanner.dart';
+
+class HomePage extends StatefulWidget {
+  TeacherInformationObject teacherInformation;
+  HomePage({Key? key, required this.teacherInformation}) : super(key: key);
+
+  @override
+  State<HomePage> createState() =>
+      _HomePageState(teacherInformation: teacherInformation);
+}
+
+class _HomePageState extends State<HomePage> {
+  TeacherInformationObject teacherInformation;
+  List<BrandObject> listBrand = [];
+  List<SupplierObject> listSuppliers = [];
+  List<TeacherInformationObject> listUser = [];
+  List<DeviceObject> listDevice = [];
+  List<TypeOfDiviceObject> listTypeOfDivice = [];
+  List<ConfigurationObject> listConfiguration = [];
+  List<ConfigurationDetailsObject> listConfigurationDetails = [];
+  List<ConfigurationSpecificationObject> listConfigurationSpecification = [];
+
+  _HomePageState({Key? key, required this.teacherInformation});
+  late List<int> device_Number;
+  @override
+
+  //Lấy danh sách nhà cung cấp
+  Future<List<SupplierObject>> GetListSuppliers() async {
+    listSuppliers = await SupplierProvider.fetchSupplier(http.Client());
+    return listSuppliers;
+  }
+
+  //Lấy danh sách Thương hiệu
+  Future<List<BrandObject>> GetListBrand() async {
+    listBrand = await BrandProvide.fetchBrand(http.Client());
+    return listBrand;
+  }
+
+  //Lấy danh sách giáo viên
+  Future<List<TeacherInformationObject>> GetListUser() async {
+    listUser =
+        await TeacherInformationProvider.fetchTeacherInformation(http.Client());
+    return listUser;
+  }
+
+  Future<List<DeviceObject>> GetListDivice() async {
+    listDevice = await DeviceProvider.fetchDevice(http.Client());
+    return listDevice;
+  }
+
+  Future<List<TypeOfDiviceObject>> GetListTypeOfDivice() async {
+    listTypeOfDivice =
+        await TypeOfDeviceProvider.fetchTypeOfDivice(http.Client());
+    return listTypeOfDivice;
+  }
+
+  Future<List<ConfigurationObject>> GetListConfiguration() async {
+    listConfiguration =
+        await ConfigurationProvide.fetchConfiguration(http.Client());
+    return listConfiguration;
+  }
+
+  Future<List<ConfigurationDetailsObject>> GetListConfigurationDetails() async {
+    listConfigurationDetails =
+        await ConfigurationDetailsProvide.fetchConfigurationDetails(
+            http.Client());
+    return listConfigurationDetails;
+  }
+
+  Future<List<ConfigurationSpecificationObject>>
+      GetListConfigurationSpecification() async {
+    listConfigurationSpecification =
+        await ConfigurationSpecificationProvide.fetchConfigurationSpecification(
+            http.Client());
+    return listConfigurationSpecification;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Size screenSize = MediaQuery.of(context).size;
+    double screenWidth = screenSize.width;
+    double screenHeight = screenSize.height;
+    var text = const Text(
+      'Danh sách đơn vị',
+      style: TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+    return Scaffold(
+      backgroundColor: const Color(0xffF4F7FC),
+      drawer: Drawer(
+        backgroundColor: const Color(0xffF4F7FC),
+        child: ListView(
+          children: [
+            UserAccountsDrawerHeader(
+              currentAccountPicture: Container(
+                width: 120,
+                height: 120,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.white,
+                      spreadRadius: 3,
+                      blurRadius: 0,
+                      offset: Offset(0, 0),
+                    ),
+                  ],
+                ),
+                child: ClipOval(
+                  child: CircleAvatar(
+                    maxRadius: 50,
+                    minRadius: 50,
+                    backgroundColor: Colors.white,
+                    backgroundImage:
+                        NetworkImage(teacherInformation.image.toString()),
+                  ),
+                ),
+              ),
+              accountName: Text(
+                teacherInformation.teacher_Name.toString(),
+                style: TextStyle(color: Colors.white, fontSize: 15),
+              ),
+              accountEmail: Text(teacherInformation.userName.toString(),
+                  style: TextStyle(color: Colors.white, fontSize: 15)),
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("assets/Gif_Status/backgroung_taskbar.gif"),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            ListTile(
+              leading: Image.asset(
+                'assets/Icon/logout_x64.png',
+                width: 30,
+                height: 30,
+                fit: BoxFit.cover,
+              ),
+              title: const Text('Đăng xuất'),
+              onTap: () async {
+               await Preferences.saveLoggedInStatus(false);
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                  (route) => false,
+                );
+              },
+            ),
+
+            //Chức năng xem cấu hình
+            ListTile(
+                leading: Image.asset(
+                  'assets/Icon/Configuration.png',
+                  width: 30,
+                  height: 30,
+                  fit: BoxFit.cover,
+                ),
+                title: const Text('Cấu hình'),
+                onTap: () async {
+                  bool isLoading = true;
+                  if (isLoading) {
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                              backgroundColor:
+                                  Color.fromRGBO(255, 255, 255, 0.4),
+                              content: Container(
+                                width: 100,
+                                height: 100,
+                                child: Center(
+                                  child: SpinKitChasingDots(
+                                    color: Color.fromARGB(255, 31, 60, 114),
+                                    size: 50,
+                                  ),
+                                ),
+                              ));
+                        });
+                  }
+                  listConfiguration = await GetListConfiguration();
+                  listConfigurationDetails =
+                      await GetListConfigurationDetails();
+                  listTypeOfDivice = await GetListTypeOfDivice();
+                  try {
+                    listDevice = await GetListDivice();
+                    listConfigurationDetails =
+                        await GetListConfigurationDetails();
+                    listConfigurationSpecification =
+                        await GetListConfigurationSpecification();
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ConfigurationPage(
+                          listConfiguration: listConfiguration,
+                          listConfigurationDetails: listConfigurationDetails,
+                          listTypeOfDivice: listTypeOfDivice,
+                        ),
+                      ),
+                    );
+                  } catch (error) {
+                    // Xử lý lỗi nếu có
+                    print(error);
+                  } finally {
+                    setState(() {
+                      isLoading = false; // Đánh dấu đã hoàn thành
+                    });
+                  }
+                }),
+
+            ListTile(
+                leading: Image.asset(
+                  'assets/Icon/user.png',
+                  width: 30,
+                  height: 30,
+                  fit: BoxFit.cover,
+                ),
+                title: const Text('Thông tin giáo viên'),
+                onTap: () async {
+                  bool isLoading = true;
+                  if (isLoading) {
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                              backgroundColor:
+                                  Color.fromRGBO(255, 255, 255, 0.4),
+                              content: Container(
+                                width: 100,
+                                height: 100,
+                                child: Center(
+                                  child: SpinKitChasingDots(
+                                    color: Color.fromARGB(255, 31, 60, 114),
+                                    size: 50,
+                                  ),
+                                ),
+                              ));
+                        });
+                  }
+                  try {
+                    listUser = await GetListUser();
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => User(
+                          listUser: listUser,
+                        ),
+                      ),
+                    );
+                  } catch (error) {
+                    // Xử lý lỗi nếu có
+                    print(error);
+                  } finally {
+                    setState(() {
+                      isLoading = false; // Đánh dấu đã hoàn thành
+                    });
+                  }
+                }),
+            ListTile(
+                leading: Image.asset(
+                  'assets/Icon/brand.png',
+                  width: 30,
+                  height: 30,
+                  fit: BoxFit.cover,
+                ),
+                title: const Text('Thương hiệu'),
+                onTap: () async {
+                  bool isLoading = true;
+                  if (isLoading) {
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                              backgroundColor:
+                                  Color.fromRGBO(255, 255, 255, 0.4),
+                              content: Container(
+                                width: 100,
+                                height: 100,
+                                child: Center(
+                                  child: SpinKitChasingDots(
+                                    color: Color.fromARGB(255, 31, 60, 114),
+                                    size: 50,
+                                  ),
+                                ),
+                              ));
+                        });
+                  }
+                  try {
+                    listBrand = await GetListBrand();
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BrandPage(
+                          listBrand: listBrand,
+                        ),
+                      ),
+                    );
+                  } catch (error) {
+                    // Xử lý lỗi nếu có
+                    print(error);
+                  } finally {
+                    setState(() {
+                      isLoading = false; // Đánh dấu đã hoàn thành
+                    });
+                  }
+                }),
+          ],
+        ),
+      ),
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: const Color.fromARGB(255, 31, 60, 114),
+        title: const Text(
+          'Quản lý thiết bị nhà trường',
+          style: TextStyle(
+              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+          textAlign: TextAlign.left,
+        ),
+        actions:  <Widget>[
+            IconButton(
+        onPressed: () async{
+                 bool isLoading = true;
+                      if (isLoading) {
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                  backgroundColor:
+                                      Color.fromRGBO(255, 255, 255, 0.4),
+                                  content: Container(
+                                    width: 100,
+                                    height: 100,
+                                    child: Center(
+                                      child: SpinKitChasingDots(
+                                        color: Color.fromARGB(255, 31, 60, 114),
+                                        size: 50,
+                                      ),
+                                    ),
+                                  ));
+                            });
+                      }
+                      try {
+                        listDevice = await GetListDivice();
+                        listTypeOfDivice = await GetListTypeOfDivice();
+                        listBrand = await GetListBrand();
+                        listSuppliers = await GetListSuppliers();
+                        listConfigurationDetails =
+                            await GetListConfigurationDetails();
+                        listConfigurationSpecification =
+                            await GetListConfigurationSpecification();
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => QRScannerScreen(
+                              listDevice: listDevice,
+                              listTypeOfDivice: listTypeOfDivice,
+                              listBrand: listBrand,
+                              listSuppliers: listSuppliers,
+                              listConfigurationDetails:
+                                  listConfigurationDetails,
+                              listConfigurationSpecification:
+                                  listConfigurationSpecification,
+                            ),
+                          ),
+                        );
+                      } catch (error) {
+                        // Xử lý lỗi nếu có
+                        print(error);
+                      } finally {
+                        setState(() {
+                          isLoading = false; // Đánh dấu đã hoàn thành
+                        });
+                      }
+              },
+        icon: Icon(Icons.qr_code_scanner,color: Colors.white,)
+        ),
+          SizedBox(width: 10),
+          Icon(
+            Icons.notifications,
+            color: Colors.white,
+          ),
+          SizedBox(width: 7),
+        ],
+        
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              height: 200,
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/Gif_Status/background.gif'),
+                  fit: BoxFit.fill,
+                ),
+              ),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      return FractionallySizedBox(
+                        widthFactor:
+                            0.8, // Tùy chỉnh độ rộng của FractionallySizedBox theo nhu cầu
+                        child: Text(
+                          'Chào mừng đến với Thiết bị CĐKT Cao Thắng',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 5.0,
+                            height: 1.5,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Danh sách thiết bị',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () async {
+                      bool isLoading = true;
+                      if (isLoading) {
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                  backgroundColor:
+                                      Color.fromRGBO(255, 255, 255, 0.4),
+                                  content: Container(
+                                    width: 100,
+                                    height: 100,
+                                    child: Center(
+                                      child: SpinKitChasingDots(
+                                        color: Color.fromARGB(255, 31, 60, 114),
+                                        size: 50,
+                                      ),
+                                    ),
+                                  ));
+                            });
+                      }
+                      try {
+                        listDevice = await GetListDivice();
+                        listTypeOfDivice = await GetListTypeOfDivice();
+                        listBrand = await GetListBrand();
+                        listSuppliers = await GetListSuppliers();
+                        listConfigurationDetails =
+                            await GetListConfigurationDetails();
+                        listConfigurationSpecification =
+                            await GetListConfigurationSpecification();
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DevicePage(
+                              listDevice: listDevice,
+                              listTypeOfDivice: listTypeOfDivice,
+                              listBrand: listBrand,
+                              listSuppliers: listSuppliers,
+                              listConfigurationDetails:
+                                  listConfigurationDetails,
+                              listConfigurationSpecification:
+                                  listConfigurationSpecification,
+                            ),
+                          ),
+                        );
+                      } catch (error) {
+                        // Xử lý lỗi nếu có
+                        print(error);
+                      } finally {
+                        setState(() {
+                          isLoading = false; // Đánh dấu đã hoàn thành
+                        });
+                      }
+                    },
+                    child: const Text(
+                      'Xem tất cả',
+                      style: TextStyle(
+                        color: Color.fromARGB(255, 31, 60, 114),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            SingleChildScrollView(
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    flex: 1,
+                    child: SizedBox(
+                      height: 200,
+                      child: FutureBuilder<List<TypeOfDiviceObject>>(
+                        future: TypeOfDeviceProvider.fetchTypeOfDivice(
+                            http.Client()),
+                        builder: ((context, snapshot) {
+                          if (snapshot.hasData) {
+                            List<TypeOfDiviceObject> lsTypeOfDevice =
+                                snapshot.data!;
+                            return ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                shrinkWrap: true,
+                                itemCount: lsTypeOfDevice.length,
+                                itemBuilder: (((context, index) =>
+                                    buildDeviceItem(
+                                      context,
+                                      lsTypeOfDevice[index].Image.toString(),
+                                      lsTypeOfDevice[index]
+                                          .Type_Of_Device_Name
+                                          .toString(),
+                                      lsTypeOfDevice[index].Type_Of_Device_ID!,
+                                      Color.fromARGB(255, 19, 200, 19),
+                                    ))));
+                          } else if (snapshot.hasError) {
+                            return const Center(
+                              child: Text('Hệ thống đang có sự cố!!'),
+                            );
+                          }
+                          return Center(
+                            child: SpinKitChasingDots(
+                              color: Color.fromARGB(255, 31, 60, 114),
+                              size: 50,
+                            ),
+                          );
+                        }),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Flexible(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Danh sách đơn vị',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const Don_Vi()));
+                      },
+                      child: const Text(
+                        'Xem tất cả',
+                        style: TextStyle(
+                          color: Color.fromARGB(255, 31, 60, 114),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    flex: 1,
+                    child: SizedBox(
+                      height: 190,
+                      child: FutureBuilder<List<FacultyObject>>(
+                        future: FacultyProvider.fetchFaculty(http.Client()),
+                        builder: ((context, snapshot) {
+                          if (snapshot.hasData) {
+                            List<FacultyObject> lsDonVi = snapshot.data!;
+                            return ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                shrinkWrap: true,
+                                itemCount: lsDonVi.length,
+                                itemBuilder: (((context, index) =>
+                                    buildDepartmentItem(
+                                      context,
+                                      lsDonVi[index].image.toString(),
+                                      lsDonVi[index].facultyName.toString(),
+                                      lsDonVi.length.toString(),
+                                      lsDonVi.length.toString(),
+                                      Colors.green,
+                                    ))));
+                          } else if (snapshot.hasError) {
+                            return const Center(
+                              child: Text('Hệ thống đang có sự cố!!'),
+                            );
+                          }
+                          return Center(
+                            child: SpinKitChasingDots(
+                              color: Color.fromARGB(255, 31, 60, 114),
+                              size: 50,
+                            ),
+                          );
+                        }),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

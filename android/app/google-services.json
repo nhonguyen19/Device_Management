@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "713642409627",
+    "project_id": "device-c4c2f",
+    "storage_bucket": "device-c4c2f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:713642409627:android:3b8c371fc8b41e9f4b503e",
+        "android_client_info": {
+          "package_name": "com.example.devide_manager"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBpMDW2DfiQS3BCCaVM_S5wpJcnVtS2uV4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
