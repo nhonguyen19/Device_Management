@@ -26,4 +26,6 @@ class FacultyObject {
     data['Status'] = this.status;
     return data;
   }
+
+  where(bool Function(dynamic faculty) param0) {}
 }

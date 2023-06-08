@@ -2,10 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:devide_manager/provider/api_link.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as path;
 import 'package:http/http.dart' as http;
-import 'package:path_provider/path_provider.dart';
 
 import '../object/FacultyOject.dart';
 
@@ -160,5 +158,11 @@ class FacultyProvider {
       print('Error updating status: $error');
       throw Exception('Failed to update status: $error');
     }
+  }
+// đếm khoa
+  static int countActiveFaculties(List<FacultyObject> faculties) {
+    List<FacultyObject> activeFaculties =
+        faculties.where((faculty) => faculty.status == 1).toList();
+    return activeFaculties.length;
   }
 }

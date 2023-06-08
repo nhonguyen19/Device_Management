@@ -17,7 +17,6 @@ class EditFacultyScreen extends StatefulWidget {
 
 class _EditFacultyScreenState extends State<EditFacultyScreen> {
   TextEditingController _nameController = TextEditingController();
-  TextEditingController _statusController = TextEditingController();
   File? _image;
   bool _isLoading = false;
   late FacultyObject facultyObject;
@@ -88,7 +87,7 @@ class _EditFacultyScreenState extends State<EditFacultyScreen> {
 
   Widget _buildImagePreview() {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
           'Hình ảnh',
@@ -102,26 +101,26 @@ class _EditFacultyScreenState extends State<EditFacultyScreen> {
         GestureDetector(
           onTap: _pickImage,
           child: Container(
-              height: 150,
-              width: 150,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8.0),
-                color: Color.fromARGB(255, 31, 60, 114),
-                image: _image != null
-                    ? DecorationImage(
-                        image: FileImage(_image!),
-                        fit: BoxFit.cover,
-                      )
-                    : null,
-              ),
-              child: _image == null
-                  ? Icon(
-                      Icons.camera_alt,
-                      size: 30,
-                      color: Colors.white,
+            width:150,
+            height: 150,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8.0),
+              color: Color.fromARGB(255, 31, 60, 114),
+              image: _image != null
+                  ? DecorationImage(
+                      image: FileImage(_image!),
+                      fit: BoxFit.cover,
                     )
-                  : null //Image.network(widget.faculty.image.toString(),fit: BoxFit.cover, ) : null,
-              ),
+                  : null,
+            ),
+            child: _image == null
+                ? Icon(
+                    Icons.camera_alt,
+                    size: 30,
+                    color: Colors.white,
+                  )
+                : null,
+          ),
         ),
       ],
     );
@@ -151,59 +150,63 @@ class _EditFacultyScreenState extends State<EditFacultyScreen> {
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            _buildImagePreview(),
-            SizedBox(height: 16.0),
-            TextFormField(
-              controller: _nameController,
-              decoration: InputDecoration(
-                labelText: 'Tên khoa',
-                labelStyle: TextStyle(
-                  color: Color.fromARGB(255, 31, 60, 114),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _buildImagePreview(),
+              SizedBox(height: 16.0),
+              TextFormField(
+                controller: _nameController,
+                decoration: InputDecoration(
+                  labelText: 'Tên khoa',
+                  labelStyle: TextStyle(
+                    color: Color.fromARGB(255, 31, 60, 114),
+                  ),
                 ),
               ),
-            ),
-            SizedBox(height: 16.0),
-            DropdownButtonFormField<int>(
-              decoration: InputDecoration(
-                labelText: 'Trạng thái',
-                labelStyle: TextStyle(
-                  color: Color.fromARGB(255, 31, 60, 114),
+              SizedBox(height: 16.0),
+              DropdownButtonFormField<int>(
+                decoration: InputDecoration(
+                  labelText: 'Trạng thái',
+                  labelStyle: TextStyle(
+                    color: Color.fromARGB(255, 31, 60, 114),
+                  ),
                 ),
+                value: selectedStatus,
+                onChanged: (int? value) {
+                  setState(() {
+                    selectedStatus = value ?? 1;
+                  });
+                },
+                items: statusOptions.map((option) {
+                  return DropdownMenuItem<int>(
+                    value: option['value'],
+                    child: Text(option['label']),
+                  );
+                }).toList(),
               ),
-              value: selectedStatus,
-              onChanged: (int? value) {
-                setState(() {
-                  selectedStatus = value ?? 1;
-                });
-              },
-              items: statusOptions.map((option) {
-                return DropdownMenuItem<int>(
-                  value: option['value'],
-                  child: Text(option['label']),
-                );
-              }).toList(),
-            ),
-            SizedBox(height: 16.0),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                minimumSize: Size(145, 50),
-                primary: Color.fromARGB(255, 31, 60, 114),
-                onPrimary: Colors.white,
+              SizedBox(height: 16.0),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  minimumSize: Size(145, 50),
+                  primary: Color.fromARGB(255, 31, 60, 114),
+                  onPrimary: Colors.white,
+                ),
+                onPressed: _isLoading ? null : _saveChanges,
+                child: _isLoading
+                    ? SpinKitCircle(
+                        color: Colors.white,
+                        size: 24.0,
+                      )
+                    : Text(
+                        'Lưu thay đổi',
+                        style: TextStyle(fontSize: 20),
+                      ),
               ),
-              onPressed: _isLoading ? null : _saveChanges,
-              child: _isLoading
-                  ? SpinKitCircle(
-                      color: Colors.white,
-                      size: 24.0,
-                    )
-                  : Text(
-                      'Lưu thay đổi',
-                      style: TextStyle(fontSize: 20),
-                    ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

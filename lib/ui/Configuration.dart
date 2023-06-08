@@ -5,6 +5,7 @@ import 'package:devide_manager/object/ConfigurationObject.dart';
 import 'package:devide_manager/provider/api_Configuration.dart';
 import 'package:devide_manager/object/ConfigurationDetailsObject.dart';
 import 'package:devide_manager/provider/api_Configuration_Details.dart';
+import 'package:devide_manager/provider/api_Type_Of_Device.dart';
 import 'package:devide_manager/ui/DeviceDetails.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:devide_manager/widget/GetTypeOfDevice.dart';
@@ -32,17 +33,24 @@ class _ConfigurationState extends State<ConfigurationPage> {
   List<ConfigurationObject> _configuration = [];
   List<ConfigurationObject> _configurationDisplay = [];
    _ConfigurationState({Key?key,required this.listConfiguration,required this.listConfigurationDetails,required this.listTypeOfDivice});
-
+  bool isRefresh = false;
   @override
   void initState() {
     super.initState();
-    fetchDevices();
+    fetchConfiguraions();
   }
 
 
-  Future<void> fetchDevices() async {
+  Future<void> fetchConfiguraions() async {
     try {
-      listConfiguration = listConfiguration;
+      if(!isRefresh){
+      listConfiguration=listConfiguration;
+      isRefresh = true;
+    }else{
+      listConfiguration = await ConfigurationProvide.fetchConfiguration(http.Client());
+      listConfigurationDetails = await ConfigurationDetailsProvide.fetchConfigurationDetails(http.Client());
+      listTypeOfDivice = await TypeOfDeviceProvider.fetchTypeOfDivice(http.Client());
+    }
       setState(() {
         _configuration = listConfiguration;
         _configurationDisplay = listConfiguration;
@@ -60,7 +68,10 @@ class _ConfigurationState extends State<ConfigurationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _searchBar(),
-      body: _buildDeviceList(),
+      body: RefreshIndicator(
+        onRefresh: fetchConfiguraions,
+        child: _buildDeviceList(),
+      ),
     );
   }
 

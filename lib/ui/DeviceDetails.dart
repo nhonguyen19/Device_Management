@@ -62,6 +62,17 @@ class _DeviceDetail_State extends State<Device_Details> {
     required this.listConfigurationDetails,
     required this.listConfigurationSpecification,
   });
+  bool isRefresh = false;
+  @override
+  Future<DeviceObject> GetDevice(int id) async {
+    List<DeviceObject> listDevice = await DeviceProvider.fetchDevice(http.Client());
+    for(var item in listDevice){
+      if(item.id == id){
+        return item;
+      }
+    }
+    return listDevice[0];
+  }
 
   @override
   // GetListTOD(int id) async {
@@ -82,8 +93,47 @@ class _DeviceDetail_State extends State<Device_Details> {
   //       );
 
   // }
+   Future<void> fetchDeviceDetails() async {
+    try {
+      if(isRefresh){
+      deviceDetail = await GetDevice(deviceDetail.id!);
+          listTypeOfDivice =
+              await TypeOfDeviceProvider.fetchTypeOfDivice(http.Client());
+          listBrand = await BrandProvide.fetchBrand(http.Client());
+          listSuppliers = await SupplierProvider.fetchSupplier(http.Client());
+          listConfigurationDetails =
+              await ConfigurationDetailsProvide.fetchConfigurationDetails(
+                  http.Client());
+          listConfigurationSpecification =
+              await ConfigurationSpecificationProvide
+                  .fetchConfigurationSpecification(http.Client());
+      
+    }else{
+      isRefresh = true;
+    }
+      setState(() {
+        deviceDetail = deviceDetail;
+      });
+    } catch (error) {
+      print('Error fetching device: $error');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error fetching device. Please try again later.'),
+        ),
+      );
+    }
+  }
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: RefreshIndicator(
+        onRefresh:fetchDeviceDetails,
+        child: buildDeviceDetails(),
+      ),
+    );
+  }
+  Widget buildDeviceDetails(){
     Size screenSize = MediaQuery.of(context).size;
     double screenWidth = screenSize.width;
     double screenHeight = screenSize.height;
@@ -94,9 +144,8 @@ class _DeviceDetail_State extends State<Device_Details> {
     } else {
       statusTemp = 'Đang sửa chữa';
     }
-    return Scaffold(
-        backgroundColor: Colors.white,
-        body: ListView(children: [
+    return ListView(
+      children: [
           ItemAppBar(deviceDetails: deviceDetail,listTypeOfDivice: listTypeOfDivice,listBrand: listBrand,listSuppliers: listSuppliers,listConfigurationDetails: listConfigurationDetails,listConfigurationSpecification: listConfigurationSpecification),
           Padding(
             padding: EdgeInsets.all(16),
@@ -125,13 +174,16 @@ class _DeviceDetail_State extends State<Device_Details> {
                           ),
                           child: Row(
                             children: [
-                              Text(
+                             Expanded(child:  Text(
                                 deviceDetail.Device_Name.toString(),
                                 style: TextStyle(
                                     fontSize: 24,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white),
+                                    textAlign: TextAlign.left,
+                                    overflow: TextOverflow.visible, 
                               ),
+    )
                             ],
                           ),
                         ),
@@ -312,9 +364,11 @@ class _DeviceDetail_State extends State<Device_Details> {
                         ),),
                       ],
                     ),
-                  )),
+                  )
+                  ),
             ),
           ),
-        ]));
+        ]);
   }
 }
+

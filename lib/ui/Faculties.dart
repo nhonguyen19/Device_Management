@@ -7,17 +7,22 @@ import 'package:http/http.dart' as http;
 
 import 'Edit_Faculty.dart';
 
-class Don_Vi extends StatefulWidget {
-  const Don_Vi({Key? key});
+class FacultyScreen extends StatefulWidget {
+  List<FacultyObject> listFaculty;
+  FacultyScreen({Key? key, required this.listFaculty});
 
   @override
-  _Don_ViState createState() => _Don_ViState();
+  _FacultyState createState() => _FacultyState(listFaculty: listFaculty);
 }
 
-class _Don_ViState extends State<Don_Vi> {
+class _FacultyState extends State<FacultyScreen> {
+  List<FacultyObject> listFaculty;
   bool _isSearching = false;
+  bool isRefresh = false;
   List<FacultyObject> _faculty = [];
   List<FacultyObject> _facultyDisplay = [];
+
+  _FacultyState({Key? key, required this.listFaculty});
   String? _image;
 
   @override
@@ -28,11 +33,15 @@ class _Don_ViState extends State<Don_Vi> {
 
   Future<void> fetchFaculties() async {
     try {
-      List<FacultyObject> faculties =
-          await FacultyProvider.fetchFaculty(http.Client());
+      if (!isRefresh) {
+        listFaculty = listFaculty;
+        isRefresh = true;
+      } else {
+        listFaculty = await FacultyProvider.fetchFaculty(http.Client());
+      }
       setState(() {
-        _faculty = faculties;
-        _facultyDisplay = faculties;
+        _faculty = listFaculty;
+        _facultyDisplay = listFaculty;
       });
     } catch (error) {
       print('Lỗi kết nối api: $error');
@@ -47,20 +56,21 @@ class _Don_ViState extends State<Don_Vi> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _searchBar(),
-      body: _buildFacultyList(),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Color.fromARGB(255, 31, 60, 114),
-        child: Icon(Icons.add),
-        onPressed: () {
-          _navigateToFacultyAddScreen().then((shouldReload) {
-            if (shouldReload == true) {
-              fetchFaculties(); // Reload faculties after adding a new faculty
-            }
-          });
-        },
-      ),
-    );
+        appBar: _searchBar(),
+        body: RefreshIndicator(
+          onRefresh: fetchFaculties,
+          child: _buildFacultyList(),
+        ),
+        floatingActionButton: FloatingActionButton(
+            backgroundColor: Color.fromARGB(255, 31, 60, 114),
+            child: Icon(Icons.add),
+            onPressed: () {
+              _navigateToFacultyAddScreen().then((shouldReload) {
+                if (shouldReload == true) {
+                  fetchFaculties(); // Reload faculties after adding a new faculty
+                }
+              });
+            }));
   }
 
   AppBar _searchBar() {
@@ -78,12 +88,13 @@ class _Don_ViState extends State<Don_Vi> {
               onChanged: (text) {
                 text = text.toLowerCase();
                 setState(() {
-                  _facultyDisplay = _faculty.where((faculty) {
-                    String statusString = faculty.status == 1
+                  _facultyDisplay = _faculty.where((listFaculty) {
+                    String statusString = listFaculty.status == 1
                         ? 'Đang hoạt động'
                         : 'Ngưng hoạt động';
-                    return faculty.facultyName!.toLowerCase().contains(text) ||
-                        faculty.image!.toLowerCase().contains(text) ||
+                    return listFaculty.facultyName!
+                            .toLowerCase()
+                            .contains(text) ||
                         statusString.toLowerCase().contains(text);
                   }).toList();
                 });
@@ -114,9 +125,8 @@ class _Don_ViState extends State<Don_Vi> {
     }
 
     return ListView.builder(
-      itemCount: _facultyDisplay.length,
-      itemBuilder: (context, index) => _buildFacultyItem(index),
-    );
+        itemCount: _facultyDisplay.length,
+        itemBuilder: (context, index) => _buildFacultyItem(index));
   }
 
   Widget _buildFacultyItem(int index) {
@@ -196,29 +206,54 @@ class _Don_ViState extends State<Don_Vi> {
     return false;
   }
 
-
-
-
-
-
   Future<bool?> _showDeleteConfirmationDialog(FacultyObject faculty) {
     return showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Xóa khoa'),
-          content: Text('Bạn có chắc chắn muốn xóa khoa này?'),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Text(
+            'Xóa khoa',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          backgroundColor: Color.fromARGB(255, 31, 60, 114),
+          content: Text(
+            'Bạn có chắc chắn muốn xóa khoa này?',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+            ),
+          ),
           actions: <Widget>[
             TextButton(
-              child: Text('Hủy'),
+              child: Text(
+                'Hủy',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                ),
+              ),
               onPressed: () {
                 Navigator.of(context).pop(false);
               },
             ),
             TextButton(
-              child: Text('Xóa'),
+              child: Text(
+                'Xóa',
+                style: TextStyle(
+                  color: Colors.red,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               onPressed: () async {
-                 FacultyProvider.updateStatus(faculty.facultyID!,0);
+                FacultyProvider.updateStatus(faculty.facultyID!, 0);
                 Navigator.of(context).pop(true);
               },
             ),

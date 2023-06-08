@@ -25,6 +25,7 @@ class _UserState extends State<User> {
   List<TeacherInformationObject> _user = [];
   List<TeacherInformationObject> _userDisplay = [];
   _UserState({Key?key,required this.listUser});
+  bool isRefresh=false;
   @override
   void initState() {
     super.initState();
@@ -33,7 +34,12 @@ class _UserState extends State<User> {
 
   Future<void> fetchUsers() async {
     try {
-     listUser = listUser;
+      if(!isRefresh){
+      listUser=listUser;
+      isRefresh = true;
+    }else{
+      listUser = await TeacherInformationProvider.fetchTeacherInformation(http.Client());
+    }
       setState(() {
         _user = listUser;
         _userDisplay = listUser;
@@ -51,7 +57,10 @@ class _UserState extends State<User> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _searchBar(),
-      body: _buildUserList(),
+      body: RefreshIndicator(
+        onRefresh: fetchUsers,
+        child: _buildUserList(),
+      ),
     );
   }
 

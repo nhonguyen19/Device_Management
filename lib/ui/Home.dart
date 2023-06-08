@@ -19,7 +19,6 @@ import 'package:devide_manager/ui/Devices.dart';
 import 'package:devide_manager/ui/Login.dart';
 import 'package:devide_manager/ui/Faculties.dart';
 import 'package:devide_manager/ui/User.dart';
-import 'package:devide_manager/widget/GetTypeOfDevice.dart';
 import 'package:devide_manager/widget/widget.dart';
 import 'package:devide_manager/object/TypeOfDeviceObject.dart';
 import 'package:devide_manager/provider/api_Type_Of_Device.dart';
@@ -28,32 +27,75 @@ import 'package:devide_manager/provider/api_Configuration.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
-
 import 'QR_Code_Scanner.dart';
 
 class HomePage extends StatefulWidget {
   TeacherInformationObject teacherInformation;
-  HomePage({Key? key, required this.teacherInformation}) : super(key: key);
-
-  @override
-  State<HomePage> createState() =>
-      _HomePageState(teacherInformation: teacherInformation);
-}
-
-class _HomePageState extends State<HomePage> {
-  TeacherInformationObject teacherInformation;
   List<BrandObject> listBrand = [];
   List<SupplierObject> listSuppliers = [];
+  List<FacultyObject> listFaculty =[];
   List<TeacherInformationObject> listUser = [];
   List<DeviceObject> listDevice = [];
   List<TypeOfDiviceObject> listTypeOfDivice = [];
   List<ConfigurationObject> listConfiguration = [];
   List<ConfigurationDetailsObject> listConfigurationDetails = [];
   List<ConfigurationSpecificationObject> listConfigurationSpecification = [];
+  HomePage(
+      {Key? key,
+      required this.teacherInformation,
+      required this.listBrand,
+      required this.listSuppliers,
+      required this.listUser,
+      required this.listFaculty,
+      required this.listDevice,
+      required this.listTypeOfDivice,
+      required this.listConfiguration,
+      required this.listConfigurationDetails,
+      required this.listConfigurationSpecification})
+      : super(key: key);
 
-  _HomePageState({Key? key, required this.teacherInformation});
+  @override
+  State<HomePage> createState() =>
+      _HomePageState(
+      teacherInformation: teacherInformation,
+      listBrand: listBrand,
+      listConfiguration: listConfiguration,
+      listConfigurationDetails: listConfigurationDetails,
+      listConfigurationSpecification: listConfigurationSpecification,
+      listDevice: listDevice,
+      listSuppliers: listSuppliers,
+      listTypeOfDivice: listTypeOfDivice,
+      listUser: listUser,
+      listFaculty: listFaculty);
+}
+
+class _HomePageState extends State<HomePage> {
+  TeacherInformationObject teacherInformation;
+  List<BrandObject> listBrand = [];
+  List<SupplierObject> listSuppliers = [];
+  List<FacultyObject> listFaculty =[];
+  List<TeacherInformationObject> listUser = [];
+  List<DeviceObject> listDevice = [];
+  List<TypeOfDiviceObject> listTypeOfDivice = [];
+  List<ConfigurationObject> listConfiguration = [];
+  List<ConfigurationDetailsObject> listConfigurationDetails = [];
+  List<ConfigurationSpecificationObject> listConfigurationSpecification = [];
+  late final FacultyObject faculty;
+
+  _HomePageState(
+      {Key? key,
+      required this.teacherInformation,
+      required this.listBrand,
+      required this.listSuppliers,
+      required this.listFaculty,
+      required this.listUser,
+      required this.listDevice,
+      required this.listTypeOfDivice,
+      required this.listConfiguration,
+      required this.listConfigurationDetails,
+      required this.listConfigurationSpecification});
   late List<int> device_Number;
+  bool isRefresh = false;
   @override
 
   //Lấy danh sách nhà cung cấp
@@ -67,7 +109,12 @@ class _HomePageState extends State<HomePage> {
     listBrand = await BrandProvide.fetchBrand(http.Client());
     return listBrand;
   }
-
+//Lấy danh sách khoa
+  Future<List<FacultyObject>> GetListFaculty() async {
+    listFaculty =
+        await FacultyProvider.fetchFaculty(http.Client());
+    return listFaculty;
+  }
   //Lấy danh sách giáo viên
   Future<List<TeacherInformationObject>> GetListUser() async {
     listUser =
@@ -106,7 +153,33 @@ class _HomePageState extends State<HomePage> {
             http.Client());
     return listConfigurationSpecification;
   }
-
+  Future<void> fetchHome() async {
+    try {
+      if(!isRefresh){
+      listUser=listUser;
+      isRefresh = true;
+    }else{
+    listFaculty = await GetListFaculty();
+    listUser = await GetListUser();
+    listDevice = await GetListDivice();
+    listTypeOfDivice = await GetListTypeOfDivice();
+    listBrand = await GetListBrand();
+    listSuppliers = await GetListSuppliers();
+    listConfiguration=await GetListConfiguration();
+    listConfigurationDetails = await GetListConfigurationDetails();
+    listConfigurationSpecification = await GetListConfigurationSpecification();   
+    }
+      setState(() {
+      });
+    } catch (error) {
+      print('Lỗi: $error');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Lỗi, Vui lòng thử lại sau'),
+        ),
+      );
+    }
+  }
   @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
@@ -190,38 +263,7 @@ class _HomePageState extends State<HomePage> {
                   fit: BoxFit.cover,
                 ),
                 title: const Text('Cấu hình'),
-                onTap: () async {
-                  bool isLoading = true;
-                  if (isLoading) {
-                    showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                              backgroundColor:
-                                  Color.fromRGBO(255, 255, 255, 0.4),
-                              content: Container(
-                                width: 100,
-                                height: 100,
-                                child: Center(
-                                  child: SpinKitChasingDots(
-                                    color: Color.fromARGB(255, 31, 60, 114),
-                                    size: 50,
-                                  ),
-                                ),
-                              ));
-                        });
-                  }
-                  listConfiguration = await GetListConfiguration();
-                  listConfigurationDetails =
-                      await GetListConfigurationDetails();
-                  listTypeOfDivice = await GetListTypeOfDivice();
-                  try {
-                    listDevice = await GetListDivice();
-                    listConfigurationDetails =
-                        await GetListConfigurationDetails();
-                    listConfigurationSpecification =
-                        await GetListConfigurationSpecification();
-                    Navigator.pop(context);
+                onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -232,14 +274,6 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                     );
-                  } catch (error) {
-                    // Xử lý lỗi nếu có
-                    print(error);
-                  } finally {
-                    setState(() {
-                      isLoading = false; // Đánh dấu đã hoàn thành
-                    });
-                  }
                 }),
 
             ListTile(
@@ -250,30 +284,7 @@ class _HomePageState extends State<HomePage> {
                   fit: BoxFit.cover,
                 ),
                 title: const Text('Thông tin giáo viên'),
-                onTap: () async {
-                  bool isLoading = true;
-                  if (isLoading) {
-                    showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                              backgroundColor:
-                                  Color.fromRGBO(255, 255, 255, 0.4),
-                              content: Container(
-                                width: 100,
-                                height: 100,
-                                child: Center(
-                                  child: SpinKitChasingDots(
-                                    color: Color.fromARGB(255, 31, 60, 114),
-                                    size: 50,
-                                  ),
-                                ),
-                              ));
-                        });
-                  }
-                  try {
-                    listUser = await GetListUser();
-                    Navigator.pop(context);
+                onTap: ()  {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -281,15 +292,7 @@ class _HomePageState extends State<HomePage> {
                           listUser: listUser,
                         ),
                       ),
-                    );
-                  } catch (error) {
-                    // Xử lý lỗi nếu có
-                    print(error);
-                  } finally {
-                    setState(() {
-                      isLoading = false; // Đánh dấu đã hoàn thành
-                    });
-                  }
+                    );                
                 }),
             ListTile(
                 leading: Image.asset(
@@ -299,30 +302,8 @@ class _HomePageState extends State<HomePage> {
                   fit: BoxFit.cover,
                 ),
                 title: const Text('Thương hiệu'),
-                onTap: () async {
-                  bool isLoading = true;
-                  if (isLoading) {
-                    showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                              backgroundColor:
-                                  Color.fromRGBO(255, 255, 255, 0.4),
-                              content: Container(
-                                width: 100,
-                                height: 100,
-                                child: Center(
-                                  child: SpinKitChasingDots(
-                                    color: Color.fromARGB(255, 31, 60, 114),
-                                    size: 50,
-                                  ),
-                                ),
-                              ));
-                        });
-                  }
-                  try {
-                    listBrand = await GetListBrand();
-                    Navigator.pop(context);
+                onTap: ()  {
+
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -331,14 +312,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                     );
-                  } catch (error) {
-                    // Xử lý lỗi nếu có
-                    print(error);
-                  } finally {
-                    setState(() {
-                      isLoading = false; // Đánh dấu đã hoàn thành
-                    });
-                  }
+                  
                 }),
           ],
         ),
@@ -354,37 +328,7 @@ class _HomePageState extends State<HomePage> {
         ),
         actions:  <Widget>[
             IconButton(
-        onPressed: () async{
-                 bool isLoading = true;
-                      if (isLoading) {
-                        showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                  backgroundColor:
-                                      Color.fromRGBO(255, 255, 255, 0.4),
-                                  content: Container(
-                                    width: 100,
-                                    height: 100,
-                                    child: Center(
-                                      child: SpinKitChasingDots(
-                                        color: Color.fromARGB(255, 31, 60, 114),
-                                        size: 50,
-                                      ),
-                                    ),
-                                  ));
-                            });
-                      }
-                      try {
-                        listDevice = await GetListDivice();
-                        listTypeOfDivice = await GetListTypeOfDivice();
-                        listBrand = await GetListBrand();
-                        listSuppliers = await GetListSuppliers();
-                        listConfigurationDetails =
-                            await GetListConfigurationDetails();
-                        listConfigurationSpecification =
-                            await GetListConfigurationSpecification();
-                        Navigator.pop(context);
+        onPressed: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -399,28 +343,28 @@ class _HomePageState extends State<HomePage> {
                                   listConfigurationSpecification,
                             ),
                           ),
-                        );
-                      } catch (error) {
-                        // Xử lý lỗi nếu có
-                        print(error);
-                      } finally {
-                        setState(() {
-                          isLoading = false; // Đánh dấu đã hoàn thành
-                        });
-                      }
+                        );                    
               },
         icon: Icon(Icons.qr_code_scanner,color: Colors.white,)
         ),
-          SizedBox(width: 10),
-          Icon(
-            Icons.notifications,
-            color: Colors.white,
-          ),
-          SizedBox(width: 7),
+            IconButton(
+        onPressed: () async{
+         
+              },
+        icon: Icon(Icons.refresh,color: Colors.white,)
+        ),
         ],
         
       ),
-      body: SingleChildScrollView(
+      body: RefreshIndicator(
+        onRefresh: fetchHome,
+        child: _buildHomeList(),
+      )
+    );
+  }
+   Widget _buildHomeList(){
+    return ListView(
+      children: [SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -472,37 +416,8 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () async {
-                      bool isLoading = true;
-                      if (isLoading) {
-                        showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                  backgroundColor:
-                                      Color.fromRGBO(255, 255, 255, 0.4),
-                                  content: Container(
-                                    width: 100,
-                                    height: 100,
-                                    child: Center(
-                                      child: SpinKitChasingDots(
-                                        color: Color.fromARGB(255, 31, 60, 114),
-                                        size: 50,
-                                      ),
-                                    ),
-                                  ));
-                            });
-                      }
-                      try {
-                        listDevice = await GetListDivice();
-                        listTypeOfDivice = await GetListTypeOfDivice();
-                        listBrand = await GetListBrand();
-                        listSuppliers = await GetListSuppliers();
-                        listConfigurationDetails =
-                            await GetListConfigurationDetails();
-                        listConfigurationSpecification =
-                            await GetListConfigurationSpecification();
-                        Navigator.pop(context);
+                    onTap: () {
+                     
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -518,14 +433,7 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                         );
-                      } catch (error) {
-                        // Xử lý lỗi nếu có
-                        print(error);
-                      } finally {
-                        setState(() {
-                          isLoading = false; // Đánh dấu đã hoàn thành
-                        });
-                      }
+                      
                     },
                     child: const Text(
                       'Xem tất cả',
@@ -604,7 +512,7 @@ class _HomePageState extends State<HomePage> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const Don_Vi()));
+                                builder: (context) => FacultyScreen(listFaculty: listFaculty,)));
                       },
                       child: const Text(
                         'Xem tất cả',
@@ -642,7 +550,7 @@ class _HomePageState extends State<HomePage> {
                                       lsDonVi[index].image.toString(),
                                       lsDonVi[index].facultyName.toString(),
                                       lsDonVi.length.toString(),
-                                      lsDonVi.length.toString(),
+                                      FacultyProvider.countActiveFaculties(listFaculty),
                                       Colors.green,
                                     ))));
                           } else if (snapshot.hasError) {
@@ -665,7 +573,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ],
         ),
-      ),
+      ),],
     );
-  }
+   }
 }

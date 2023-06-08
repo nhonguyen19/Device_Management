@@ -126,59 +126,63 @@ class _AddFacultyScreenState extends State<AddFacultyScreen> {
           ),
         ),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            _buildImagePreview(),
-            SizedBox(height: 16.0),
-            TextFormField(
-              controller: _nameController,
-              decoration: InputDecoration(
-                labelText: 'Tên khoa',
-                labelStyle: TextStyle(
-                  color: Color.fromARGB(255, 31, 60, 114),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              _buildImagePreview(),
+              SizedBox(height: 16.0),
+              TextFormField(
+                controller: _nameController,
+                decoration: InputDecoration(
+                  labelText: 'Tên khoa',
+                  labelStyle: TextStyle(
+                    color: Color.fromARGB(255, 31, 60, 114),
+                  ),
                 ),
               ),
-            ),
-            SizedBox(height: 16.0),
-            DropdownButtonFormField<int>(
-              decoration: InputDecoration(
-                labelText: 'Trạng thái',
-                labelStyle: TextStyle(
-                  color: Color.fromARGB(255, 31, 60, 114),
+              SizedBox(height: 16.0),
+              DropdownButtonFormField<int>(
+                decoration: InputDecoration(
+                  labelText: 'Trạng thái',
+                  labelStyle: TextStyle(
+                    color: Color.fromARGB(255, 31, 60, 114),
+                  ),
                 ),
+                value: selectedStatus,
+                onChanged: (int? value) {
+                  setState(() {
+                    selectedStatus = value ?? 1;
+                  });
+                },
+                items: statusOptions.map((option) {
+                  return DropdownMenuItem<int>(
+                    value: option['value'],
+                    child: Text(option['label']),
+                  );
+                }).toList(),
               ),
-              value: selectedStatus,
-              onChanged: (int? value) {
-                setState(() {
-                  selectedStatus = value ?? 1;
-                });
-              },
-              items: statusOptions.map((option) {
-                return DropdownMenuItem<int>(
-                  value: option['value'],
-                  child: Text(option['label']),
-                );
-              }).toList(),
-            ),
-            SizedBox(height: 16.0),
-            ElevatedButton(
-               
-              style: ElevatedButton.styleFrom(
+              SizedBox(height: 16.0),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
                   minimumSize: Size(145, 50),
-                primary: Color.fromARGB(255, 31, 60, 114),
-                onPrimary: Colors.white,
+                  primary: Color.fromARGB(255, 31, 60, 114),
+                  onPrimary: Colors.white,
+                ),
+                onPressed: _isLoading ? null : _addFaculty,
+                child: _isLoading
+                    ? SpinKitCircle(
+                        color: Colors.white,
+                        size: 24.0,
+                      )
+                    : Text(
+                        'Thêm',
+                        style: TextStyle(fontSize: 20),
+                      ),
               ),
-              onPressed: _isLoading ? null : _addFaculty,
-              child: _isLoading
-                  ? SpinKitCircle(
-                      color: Colors.white,
-                      size: 24.0,
-                    )
-                  : Text('Thêm', style: TextStyle(fontSize: 20),),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

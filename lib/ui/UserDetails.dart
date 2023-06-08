@@ -17,7 +17,39 @@ class UserDetail extends StatefulWidget {
 class _UserDetailState extends State<UserDetail> {
   TeacherInformationObject user;
   _UserDetailState({Key? key, required this.user});
+    bool isRefresh = false;
   @override
+
+  Future<TeacherInformationObject> GetUser(int id) async {
+    List<TeacherInformationObject> listUser = await TeacherInformationProvider.fetchTeacherInformation(http.Client());
+    for(var item in listUser){
+      if(item.id == id){
+        return item;
+      }
+    }
+    return listUser[0];
+  }
+
+  Future<void> fetchUserDetails() async {
+    try {
+      if(isRefresh){
+      user = await GetUser(user.id!);     
+    }else{
+      isRefresh = true;
+    }
+      setState(() {
+        user = user;
+      });
+    } catch (error) {
+      print('Error fetching device: $error');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error fetching device. Please try again later.'),
+        ),
+      );
+    }
+  }
+
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
     double screenWidth = screenSize.width;
@@ -28,7 +60,16 @@ class _UserDetailState extends State<UserDetail> {
         backgroundColor: Color.fromARGB(255, 31, 60, 114),
       ),
       backgroundColor: Color.fromARGB(255, 31, 60, 114),
-      body: SingleChildScrollView(
+      body: RefreshIndicator(
+        onRefresh: fetchUserDetails,
+        child: buildUserDetails(),
+      )
+           );
+  }
+
+   Widget buildUserDetails(){
+    return ListView(
+      children:[  SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(
         children: [
@@ -115,6 +156,30 @@ class _UserDetailState extends State<UserDetail> {
                         ),
                     ),
 
+                    //Hiển thị giới tính của giáo viên
+                       Container(
+                      child: ListTile(
+                            leading: Padding(padding: EdgeInsets.only(top: 10),
+                          child: Image.asset('assets/Icon/gender.png',
+                          height: 22,
+                          width: 22,),
+                          ), 
+                          title: Text(
+                            'Giới tính',
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          ),
+                          subtitle:
+                          Text(user.gender!,
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white))
+                        ),
+                    ),
+
          //Hiển thị Email của giáo viên (Tài khoản của giáo viên)
                     Container(
                       child: ListTile(
@@ -178,6 +243,30 @@ class _UserDetailState extends State<UserDetail> {
                         ),
                     ),
 
+ //Hiển thị ngày sinh của giáo viên
+                    Container(
+                      child: ListTile(
+                            leading: Padding(padding: EdgeInsets.only(top: 7),
+                          child: Image.asset('assets/Icon/birthday.png',
+                          height: 22,
+                          width: 22,),
+                          ), 
+                          title: Text(
+                            'Ngày sinh',
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          ),
+                          subtitle:
+                          Text(user.date_Of_Birth!,
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white))
+                        ),
+                    ),
+
           //Hiển thị địa chỉ của giáo viên
                     Container(
                       child: ListTile(
@@ -203,7 +292,7 @@ class _UserDetailState extends State<UserDetail> {
 
             ],
           ), 
-              )
-           );
-  }
+              ),
+    ]);
+   }
 }

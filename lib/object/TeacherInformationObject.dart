@@ -8,6 +8,8 @@ class TeacherInformationObject {
   String? teacher_Name;
   String? phone_Number;
   String? address;
+  String? gender;
+  String? date_Of_Birth;
   int? status;
 
   TeacherInformationObject({
@@ -18,6 +20,8 @@ class TeacherInformationObject {
     this.password,
     this.teacher_Name,
     this.phone_Number,
+    this.gender,
+    this.date_Of_Birth,
     this.address,
     this.status
     });
@@ -30,6 +34,8 @@ class TeacherInformationObject {
     password = json['Password'];
     teacher_Name = json['Teacher_Name'];
     phone_Number = json['Phone_Number'];
+    gender = json['Gender'];
+    date_Of_Birth = json['Date_Of_Birth'];
     address = json['Address'];
     status = json['Status'];
   }
@@ -43,6 +49,8 @@ class TeacherInformationObject {
     data['Password']=password;
     data['Teacher_Name']=teacher_Name;
     data['Phone_Number']=phone_Number;
+    data['Gender']=gender;
+    data['Date_Of_Birth']=date_Of_Birth;
     data['Status ']=status;
     return data;
   }

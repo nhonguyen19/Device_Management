@@ -38,6 +38,7 @@ class _DeviceState extends State<DevicePage> {
   List<ConfigurationDetailsObject> listConfigurationDetails = [];
   List<ConfigurationSpecificationObject> listConfigurationSpecification = [];
   bool _isSearching = false;
+  bool isRefresh = false;
   List<DeviceObject> _device = [];
   List<DeviceObject> _deviceDisplay = [];
   _DeviceState({Key?key,required this.listDevice,required this.listTypeOfDivice,required this.listBrand,required this.listSuppliers,required this.listConfigurationDetails, required this.listConfigurationSpecification});
@@ -49,7 +50,12 @@ class _DeviceState extends State<DevicePage> {
 
   Future<void> fetchDevices() async {
     try {
-     listDevice=listDevice;
+      if(!isRefresh){
+      listDevice=listDevice;
+      isRefresh = true;
+    }else{
+      listDevice = await DeviceProvider.fetchDevice(http.Client());
+    }
       setState(() {
         _device = listDevice;
         _deviceDisplay = listDevice;
@@ -67,7 +73,10 @@ class _DeviceState extends State<DevicePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _searchBar(),
-      body: _buildDeviceList(),
+      body:RefreshIndicator(
+        onRefresh: fetchDevices,
+        child:  _buildDeviceList(),
+      )
     );
   }
 

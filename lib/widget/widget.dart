@@ -1,19 +1,11 @@
-import 'package:clippy_flutter/clippy_flutter.dart';
 import 'package:devide_manager/object/DeviceObject.dart';
 import 'package:devide_manager/object/TypeOfDeviceObject.dart';
-import 'package:devide_manager/provider/api_Type_Of_Device.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:devide_manager/widget/GetTypeOfDevice.dart';
-import 'package:devide_manager/provider/api_Configuration_Details.dart';
-import 'package:devide_manager/provider/api_Confuguration_Specification.dart';
 import 'package:devide_manager/object/ConfigurationDetailsObject.dart';
 import 'package:devide_manager/object/ConfigurationSpecificationObject.dart';
 import 'package:devide_manager/object/BrandObject.dart';
 import 'package:devide_manager/object/SupplierObject.dart';
-import 'package:devide_manager/provider/api_Brand.dart';
-import 'package:devide_manager/provider/api_Supplier.dart';
-import 'package:http/http.dart' as http;
 
 //thiết bị
 Widget buildDeviceItem(BuildContext context, String image, String name,
@@ -72,7 +64,7 @@ Widget buildDeviceItem(BuildContext context, String image, String name,
 }
 
 Widget buildDepartmentItem(BuildContext context, String image, String name,
-    String total, String available, Color color) {
+    String total, int available, Color color) {
   return Container(
     margin: const EdgeInsets.only(left: 24),
     width: 350,
@@ -121,7 +113,7 @@ Widget buildDepartmentItem(BuildContext context, String image, String name,
                 Row(
                   children: [
                     Icon(
-                      Icons.layers,
+                      Icons.show_chart_rounded,
                       size: 16,
                       color: Colors.grey[500],
                     ),
@@ -139,15 +131,14 @@ Widget buildDepartmentItem(BuildContext context, String image, String name,
                 Row(
                   children: [
                     Icon(
-                      Icons.check_circle_outline,
+                      Icons.check_circle_sharp,
                       size: 16,
-                      color: Colors.grey[500],
-                    ),
+                      color: Colors.blueAccent                   ),
                     const SizedBox(width: 4),
                     Text(
-                      'Có sẵn: $available',
+                      'Đang hoạt động: $available',
                       style: TextStyle(
-                        color: Colors.grey[500],
+                        color: Colors.blueAccent,
                         fontSize: 12,
                       ),
                     ),
@@ -155,7 +146,7 @@ Widget buildDepartmentItem(BuildContext context, String image, String name,
                 ),
                 const SizedBox(height: 16),
                 LinearProgressIndicator(
-                  value: int.parse(available) / int.parse(total),
+                  value: available / int.parse(total),
                   valueColor: AlwaysStoppedAnimation<Color>(color),
                   backgroundColor: Colors.grey[200],
                 ),

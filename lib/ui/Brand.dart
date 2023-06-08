@@ -22,6 +22,7 @@ class _BrandState extends State<BrandPage> {
   List<BrandObject> _brand = [];
   List<BrandObject> _brandDisplay = [];
   _BrandState({Key? key, required this.listBrand});
+  bool isRefresh = false;
   @override
   void initState() {
     super.initState();
@@ -30,7 +31,12 @@ class _BrandState extends State<BrandPage> {
 
   Future<void> fetchBrand() async {
     try {
-      listBrand = listBrand;
+      if(!isRefresh){
+      listBrand=listBrand;
+      isRefresh = true;
+    }else{
+      listBrand = await BrandProvide.fetchBrand(http.Client());
+    }
       setState(() {
         _brand = listBrand;
         _brandDisplay = listBrand;
@@ -48,7 +54,10 @@ class _BrandState extends State<BrandPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _searchBar(),
-      body: _buildBrandList(),
+      body:RefreshIndicator(
+        onRefresh: fetchBrand,
+        child:  _buildBrandList(),
+      ),
     );
   }
 

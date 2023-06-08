@@ -1,4 +1,5 @@
 import 'package:devide_manager/provider/share_preferences.dart';
+import 'package:devide_manager/ui/LoadScreen.dart.dart';
 import 'package:flutter/material.dart';
 import 'package:devide_manager/object/TeacherInformationObject.dart';
 import 'package:devide_manager/provider/api_Teacher_Information.dart';
@@ -56,7 +57,7 @@ class _LoginPageState extends State<LoginPage> {
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
-              builder: (context) => HomePage(teacherInformation: acc!),
+              builder: (context) => LoadingScreen(user: acc!),
             ),
             (route) => false,
           );
@@ -180,12 +181,7 @@ class _LoginPageState extends State<LoginPage> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) =>
-                                        HomePage(teacherInformation: acc!),
-                                  ),
-                                );
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('Đăng nhập thành công'),
+                                        LoadingScreen(user: acc!),
                                   ),
                                 );
                               } else {
