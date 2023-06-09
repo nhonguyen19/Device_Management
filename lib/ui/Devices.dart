@@ -16,7 +16,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
 
-class DevicePage extends StatefulWidget { 
+class DevicePage extends StatefulWidget {
+  int typeOfDevice; 
   List<DeviceObject> listDevice =[];
   List<TypeOfDiviceObject> listTypeOfDivice=[];
   List<BrandObject> listBrand = [];
@@ -24,13 +25,14 @@ class DevicePage extends StatefulWidget {
   List<ConfigurationDetailsObject> listConfigurationDetails = [];
   List<ConfigurationSpecificationObject> listConfigurationSpecification = [];
 
-  DevicePage({Key?key,required this.listDevice,required this.listTypeOfDivice,required this.listBrand,required this.listSuppliers,required this.listConfigurationDetails, required this.listConfigurationSpecification});
+  DevicePage({Key?key,required this.typeOfDevice,required this.listDevice,required this.listTypeOfDivice,required this.listBrand,required this.listSuppliers,required this.listConfigurationDetails, required this.listConfigurationSpecification});
 
   @override
-  _DeviceState createState() => _DeviceState(listDevice:listDevice,listTypeOfDivice: listTypeOfDivice,listBrand:listBrand,listSuppliers:listSuppliers,listConfigurationDetails:listConfigurationDetails,listConfigurationSpecification:listConfigurationSpecification);
+  _DeviceState createState() => _DeviceState(typeOfDevice:typeOfDevice,listDevice:listDevice,listTypeOfDivice: listTypeOfDivice,listBrand:listBrand,listSuppliers:listSuppliers,listConfigurationDetails:listConfigurationDetails,listConfigurationSpecification:listConfigurationSpecification);
 }
 
 class _DeviceState extends State<DevicePage> {
+  int typeOfDevice;
   List<DeviceObject> listDevice =[];
   List<TypeOfDiviceObject> listTypeOfDivice=[];
   List<BrandObject> listBrand = [];
@@ -41,7 +43,7 @@ class _DeviceState extends State<DevicePage> {
   bool isRefresh = false;
   List<DeviceObject> _device = [];
   List<DeviceObject> _deviceDisplay = [];
-  _DeviceState({Key?key,required this.listDevice,required this.listTypeOfDivice,required this.listBrand,required this.listSuppliers,required this.listConfigurationDetails, required this.listConfigurationSpecification});
+  _DeviceState({Key?key,required this.typeOfDevice,required this.listDevice,required this.listTypeOfDivice,required this.listBrand,required this.listSuppliers,required this.listConfigurationDetails, required this.listConfigurationSpecification});
   @override
   void initState() {
     super.initState();
@@ -57,8 +59,16 @@ class _DeviceState extends State<DevicePage> {
       listDevice = await DeviceProvider.fetchDevice(http.Client());
     }
       setState(() {
-        _device = listDevice;
-        _deviceDisplay = listDevice;
+        _device = listDevice.where((listDevice){
+          return typeOfDevice == 0
+                            ? listDevice.Type_Of_Device_ID != typeOfDevice
+                            : listDevice.Type_Of_Device_ID == typeOfDevice;
+        }).toList();
+        _deviceDisplay = listDevice.where((listDevice){
+          return typeOfDevice == 0
+                            ? listDevice.Type_Of_Device_ID != typeOfDevice
+                            : listDevice.Type_Of_Device_ID == typeOfDevice;
+        }).toList();
       });
     } catch (error) {
       print('Error fetching device: $error');
@@ -96,12 +106,15 @@ class _DeviceState extends State<DevicePage> {
                 text = text.toLowerCase();
                 setState(() {
                   _deviceDisplay = _device.where((listDevice) {
-                    return listDevice.Device_Name!.toLowerCase().contains(text) ||
+                    return (listDevice.Device_Name!.toLowerCase().contains(text) ||
                         listDevice.Image!.toLowerCase().contains(text) ||
                         listDevice.Price!.toLowerCase().contains(text) ||
                         listDevice.Warranty_Period!.toLowerCase().contains(text) ||
                         listDevice.Note!.toLowerCase().contains(text) ||
-                        listDevice.Description!.toLowerCase().contains(text);
+                        listDevice.Description!.toLowerCase().contains(text)) && 
+                         (typeOfDevice == 0
+                            ? listDevice.Type_Of_Device_ID != typeOfDevice
+                            : listDevice.Type_Of_Device_ID == typeOfDevice);
                   }).toList();
                 });
               },

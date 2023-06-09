@@ -6,65 +6,15 @@ import 'package:devide_manager/object/ConfigurationDetailsObject.dart';
 import 'package:devide_manager/object/ConfigurationSpecificationObject.dart';
 import 'package:devide_manager/object/BrandObject.dart';
 import 'package:devide_manager/object/SupplierObject.dart';
+import 'package:devide_manager/ui/Devices.dart';
 
 //thiết bị
-Widget buildDeviceItem(BuildContext context, String image, String name,
-    int id, Color color) {
-  return Container(
-    margin: const EdgeInsets.only(left: 24),
-    width: 140,
-    height: 190,
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(16),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.1),
-          blurRadius: 8,
-          offset: const Offset(0, 4),
-        ),
-      ],
-    ),
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          width: 64,
-          height: 64,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: NetworkImage(image),
-              fit: BoxFit.fill,
-            ),
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-        const SizedBox(height: 16),
-        Text(
-          name,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 4),
-        GetNumberDeviceId(id: id),
-        const SizedBox(height: 8),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: const Text(
-            'Đang sử dụng',
-            style: TextStyle(color: Colors.white),
-          ),
-        ),
-      ],
-    ),
-  );
-}
 
 Widget buildDepartmentItem(BuildContext context, String image, String name,
     String total, int available, Color color) {
+       Size screenSize = MediaQuery.of(context).size;
+    double screenWidth = screenSize.width;
+    double screenHeight = screenSize.height;
   return Container(
     margin: const EdgeInsets.only(left: 24),
     width: 350,

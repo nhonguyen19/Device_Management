@@ -26,8 +26,10 @@ import 'package:devide_manager/object/ConfigurationObject.dart';
 import 'package:devide_manager/provider/api_Configuration.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:http/http.dart' as http;
 import 'QR_Code_Scanner.dart';
+import 'package:devide_manager/widget/GetTypeOfDevice.dart';
+import 'package:http/http.dart' as http;
+
 
 class HomePage extends StatefulWidget {
   TeacherInformationObject teacherInformation;
@@ -417,11 +419,11 @@ class _HomePageState extends State<HomePage> {
                   ),
                   GestureDetector(
                     onTap: () {
-                     
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => DevicePage(
+                              typeOfDevice: 0,
                               listDevice: listDevice,
                               listTypeOfDivice: listTypeOfDivice,
                               listBrand: listBrand,
@@ -576,4 +578,82 @@ class _HomePageState extends State<HomePage> {
       ),],
     );
    }
+   Widget buildDeviceItem(BuildContext context, String image, String name,
+    int id, Color color) {
+  return Container(
+    margin: const EdgeInsets.only(left: 24),
+    width: 140,
+    height: 190,
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(16),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.1),
+          blurRadius: 8,
+          offset: const Offset(0, 4),
+        ),
+      ],
+    ),
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          width: 64,
+          height: 64,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: NetworkImage(image),
+              fit: BoxFit.fill,
+            ),
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        const SizedBox(height: 16),
+        Text(
+          name,
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 4),
+        GetNumberDeviceId(id: id),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child:  GestureDetector(
+             onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DevicePage(
+                              typeOfDevice: id,
+                              listDevice: listDevice,
+                              listTypeOfDivice: listTypeOfDivice,
+                              listBrand: listBrand,
+                              listSuppliers: listSuppliers,
+                              listConfigurationDetails:
+                                  listConfigurationDetails,
+                              listConfigurationSpecification:
+                                  listConfigurationSpecification,
+                            ),
+                          ),
+                        );
+                      
+                    },
+              child: const Text(
+                'Xem chi tiết',
+                style: TextStyle(
+                  color: Color.fromARGB(255, 31, 60, 114),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+        ),
+      ],
+    ),
+  );
+}
 }
