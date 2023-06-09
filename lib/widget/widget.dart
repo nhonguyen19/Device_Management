@@ -30,102 +30,104 @@ Widget buildDepartmentItem(BuildContext context, String image, String name,
         ),
       ],
     ),
-    child: Row(
-      children: [
-        Container(
-          width: 200,
-          height: 200,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: NetworkImage(image),
-              fit: BoxFit.cover,
-            ),
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(16),
-              bottomLeft: Radius.circular(16),
+    child: SingleChildScrollView(
+      child: Row(
+        children: [
+          Container(
+            width: 200,
+            height: 200,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: NetworkImage(image),
+                fit: BoxFit.cover,
+              ),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(16),
+                bottomLeft: Radius.circular(16),
+              ),
             ),
           ),
-        ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.show_chart_rounded,
-                      size: 16,
-                      color: Colors.grey[500],
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      'Tổng số: $total',
-                      style: TextStyle(
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.show_chart_rounded,
+                        size: 16,
                         color: Colors.grey[500],
-                        fontSize: 12,
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.check_circle_sharp,
-                      size: 16,
-                      color: Colors.blueAccent                   ),
-                    const SizedBox(width: 4),
-                    Text(
-                      'Đang hoạt động: $available',
-                      style: TextStyle(
-                        color: Colors.blueAccent,
-                        fontSize: 12,
+                      const SizedBox(width: 4),
+                      Text(
+                        'Tổng số: $total',
+                        style: TextStyle(
+                          color: Colors.grey[500],
+                          fontSize: 12,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                LinearProgressIndicator(
-                  value: available / int.parse(total),
-                  valueColor: AlwaysStoppedAnimation<Color>(color),
-                  backgroundColor: Colors.grey[200],
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextButton(
-                      onPressed: () {},
-                      style: ButtonStyle(
-                        foregroundColor:
-                            MaterialStateProperty.all<Color>(color),
-                        overlayColor: MaterialStateProperty.all<Color>(
-                            color.withOpacity(0.1)),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.check_circle_sharp,
+                        size: 16,
+                        color: Colors.blueAccent                   ),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Đang hoạt động: $available',
+                        style: TextStyle(
+                          color: Colors.blueAccent,
+                          fontSize: 12,
+                        ),
                       ),
-                      child: const Text('Chi tiết'),
-                    ),
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.add_circle_outline),
-                      color: color,
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  LinearProgressIndicator(
+value: available / int.parse(total),
+                    valueColor: AlwaysStoppedAnimation<Color>(color),
+                    backgroundColor: Colors.grey[200],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextButton(
+                        onPressed: () {},
+                        style: ButtonStyle(
+                          foregroundColor:
+                              MaterialStateProperty.all<Color>(color),
+                          overlayColor: MaterialStateProperty.all<Color>(
+                              color.withOpacity(0.1)),
+                        ),
+                        child: const Text('Chi tiết'),
+                      ),
+                      IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.add_circle_outline),
+                        color: color,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     ),
   );
 }

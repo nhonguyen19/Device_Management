@@ -547,14 +547,20 @@ class _HomePageState extends State<HomePage> {
                                 shrinkWrap: true,
                                 itemCount: lsDonVi.length,
                                 itemBuilder: (((context, index) =>
-                                    buildDepartmentItem(
-                                      context,
-                                      lsDonVi[index].image.toString(),
-                                      lsDonVi[index].facultyName.toString(),
-                                      lsDonVi.length.toString(),
-                                      FacultyProvider.countActiveFaculties(listFaculty),
-                                      Colors.green,
-                                    ))));
+                                  lsDonVi[index].status == 1
+                                          ? buildDepartmentItem(
+                                              context,
+                                              lsDonVi[index].image.toString(),
+                                              lsDonVi[index]
+                                                  .facultyName
+                                                  .toString(),
+                                              lsDonVi.length.toString(),
+                                              FacultyProvider
+                                                  .countActiveFaculties(
+                                                      listFaculty),
+                                              Colors.green,
+                                            )
+                                          : Container())));
                           } else if (snapshot.hasError) {
                             return const Center(
                               child: Text('Hệ thống đang có sự cố!!'),

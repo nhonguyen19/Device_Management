@@ -67,7 +67,7 @@ class _FacultyState extends State<FacultyScreen> {
             onPressed: () {
               _navigateToFacultyAddScreen().then((shouldReload) {
                 if (shouldReload == true) {
-                  fetchFaculties(); // Reload faculties after adding a new faculty
+                  fetchFaculties();
                 }
               });
             }));
@@ -253,7 +253,7 @@ class _FacultyState extends State<FacultyScreen> {
                 ),
               ),
               onPressed: () async {
-                FacultyProvider.updateStatus(faculty.facultyID!, 0);
+                FacultyProvider.updateStatus(faculty.facultyID!,0);
                 Navigator.of(context).pop(true);
               },
             ),
