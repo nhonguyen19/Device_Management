@@ -97,31 +97,36 @@ class _EditFacultyScreenState extends State<EditFacultyScreen> {
             fontSize: 16,
           ),
         ),
-        SizedBox(height: 8.0),
-        GestureDetector(
-          onTap: _pickImage,
-          child: Container(
-            width:150,
-            height: 150,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8.0),
-              color: Color.fromARGB(255, 31, 60, 114),
-              image: _image != null
-                  ? DecorationImage(
-                      image: FileImage(_image!),
-                      fit: BoxFit.cover,
-                    )
-                  : null,
-            ),
-            child: _image == null
-                ? Icon(
-                    Icons.camera_alt,
-                    size: 30,
-                    color: Colors.white,
+        Container(
+          width: 150,
+          height: 150,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8.0),
+            color: Color.fromARGB(255, 31, 60, 114),
+            image: _image != null
+                ? DecorationImage(
+                    image: FileImage(_image!),
+                    fit: BoxFit.cover,
                   )
                 : null,
           ),
+          child: _image == null
+              ? Icon(
+                  Icons.camera_alt,
+                  size: 30,
+                  color: Colors.white,
+                )
+              : null,
         ),
+        SizedBox(height: 8.0),
+        ElevatedButton(
+            style: ElevatedButton.styleFrom(
+                fixedSize: Size(150, 5),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0)),
+                backgroundColor: Color.fromARGB(255, 31, 60, 114)),
+            onPressed: _pickImage,
+            child: Text("Chỉnh sửa ảnh")),
       ],
     );
   }
