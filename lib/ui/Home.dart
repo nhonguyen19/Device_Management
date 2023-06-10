@@ -10,6 +10,7 @@ import 'package:devide_manager/provider/api_Configuration_Details.dart';
 import 'package:devide_manager/provider/api_Confuguration_Specification.dart';
 import 'package:devide_manager/provider/api_Device.dart';
 import 'package:devide_manager/provider/api_Faculties.dart';
+import 'package:devide_manager/provider/api_Room.dart';
 import 'package:devide_manager/provider/api_Supplier.dart';
 import 'package:devide_manager/provider/api_Teacher_Information.dart';
 import 'package:devide_manager/provider/share_preferences.dart';
@@ -18,6 +19,7 @@ import 'package:devide_manager/ui/Configuration.dart';
 import 'package:devide_manager/ui/Devices.dart';
 import 'package:devide_manager/ui/Login.dart';
 import 'package:devide_manager/ui/Faculties.dart';
+import 'package:devide_manager/ui/Room.dart';
 import 'package:devide_manager/ui/User.dart';
 import 'package:devide_manager/widget/widget.dart';
 import 'package:devide_manager/object/TypeOfDeviceObject.dart';
@@ -26,6 +28,7 @@ import 'package:devide_manager/object/ConfigurationObject.dart';
 import 'package:devide_manager/provider/api_Configuration.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import '../object/RoomObject.dart';
 import 'QR_Code_Scanner.dart';
 import 'package:devide_manager/widget/GetTypeOfDevice.dart';
 import 'package:http/http.dart' as http;
@@ -36,12 +39,14 @@ class HomePage extends StatefulWidget {
   List<BrandObject> listBrand = [];
   List<SupplierObject> listSuppliers = [];
   List<FacultyObject> listFaculty =[];
+  List<RoomObject> listRoom=[];
   List<TeacherInformationObject> listUser = [];
   List<DeviceObject> listDevice = [];
   List<TypeOfDiviceObject> listTypeOfDivice = [];
   List<ConfigurationObject> listConfiguration = [];
   List<ConfigurationDetailsObject> listConfigurationDetails = [];
   List<ConfigurationSpecificationObject> listConfigurationSpecification = [];
+
   HomePage(
       {Key? key,
       required this.teacherInformation,
@@ -49,11 +54,13 @@ class HomePage extends StatefulWidget {
       required this.listSuppliers,
       required this.listUser,
       required this.listFaculty,
+      required this.listRoom,
       required this.listDevice,
       required this.listTypeOfDivice,
       required this.listConfiguration,
       required this.listConfigurationDetails,
-      required this.listConfigurationSpecification})
+      required this.listConfigurationSpecification,
+      })
       : super(key: key);
 
   @override
@@ -68,7 +75,8 @@ class HomePage extends StatefulWidget {
       listSuppliers: listSuppliers,
       listTypeOfDivice: listTypeOfDivice,
       listUser: listUser,
-      listFaculty: listFaculty);
+      listFaculty: listFaculty,
+      listRoom: listRoom);
 }
 
 class _HomePageState extends State<HomePage> {
@@ -76,6 +84,7 @@ class _HomePageState extends State<HomePage> {
   List<BrandObject> listBrand = [];
   List<SupplierObject> listSuppliers = [];
   List<FacultyObject> listFaculty =[];
+  List<RoomObject> listRoom= [];
   List<TeacherInformationObject> listUser = [];
   List<DeviceObject> listDevice = [];
   List<TypeOfDiviceObject> listTypeOfDivice = [];
@@ -90,6 +99,7 @@ class _HomePageState extends State<HomePage> {
       required this.listBrand,
       required this.listSuppliers,
       required this.listFaculty,
+      required this.listRoom,
       required this.listUser,
       required this.listDevice,
       required this.listTypeOfDivice,
@@ -123,31 +133,36 @@ class _HomePageState extends State<HomePage> {
         await TeacherInformationProvider.fetchTeacherInformation(http.Client());
     return listUser;
   }
-
+  //Lấy danh sách thiết bị
   Future<List<DeviceObject>> GetListDivice() async {
     listDevice = await DeviceProvider.fetchDevice(http.Client());
     return listDevice;
   }
-
+  //Lấy danh sách phòng
+    Future<List<RoomObject>> GetListRoom() async {
+    listRoom = await RoomProvider.fetchRoom(http.Client());
+    return listRoom;
+  }
+  //Lấy danh sách loại
   Future<List<TypeOfDiviceObject>> GetListTypeOfDivice() async {
     listTypeOfDivice =
         await TypeOfDeviceProvider.fetchTypeOfDivice(http.Client());
     return listTypeOfDivice;
   }
-
+  //Lấy danh sách cấu hình
   Future<List<ConfigurationObject>> GetListConfiguration() async {
     listConfiguration =
         await ConfigurationProvide.fetchConfiguration(http.Client());
     return listConfiguration;
   }
-
+  //Lấy danh sách loại cấu hình
   Future<List<ConfigurationDetailsObject>> GetListConfigurationDetails() async {
     listConfigurationDetails =
         await ConfigurationDetailsProvide.fetchConfigurationDetails(
             http.Client());
     return listConfigurationDetails;
   }
-
+  //Lấy danh sách thông số cấu hình
   Future<List<ConfigurationSpecificationObject>>
       GetListConfigurationSpecification() async {
     listConfigurationSpecification =
@@ -162,6 +177,7 @@ class _HomePageState extends State<HomePage> {
       isRefresh = true;
     }else{
     listFaculty = await GetListFaculty();
+    listRoom = await GetListRoom();
     listUser = await GetListUser();
     listDevice = await GetListDivice();
     listTypeOfDivice = await GetListTypeOfDivice();
@@ -169,7 +185,8 @@ class _HomePageState extends State<HomePage> {
     listSuppliers = await GetListSuppliers();
     listConfiguration=await GetListConfiguration();
     listConfigurationDetails = await GetListConfigurationDetails();
-    listConfigurationSpecification = await GetListConfigurationSpecification();   
+    listConfigurationSpecification = await GetListConfigurationSpecification(); 
+      
     }
       setState(() {
       });
@@ -316,6 +333,32 @@ class _HomePageState extends State<HomePage> {
                     );
                   
                 }),
+                 ListTile(
+                leading: Image.asset(
+                  'assets/Icon/room_black.png',
+                  width: 30,
+                  height: 30,
+                  fit: BoxFit.cover,
+                ),
+                title: const Text('Phòng'),
+                onTap: ()  {
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => RoomScreen(
+                          listRoom: listRoom,
+                          listDevice: listDevice,
+                          listTypeOfDivice: listTypeOfDivice,
+                          listBrand: listBrand,
+                          listConfigurationDetails: listConfigurationDetails,
+                          listConfigurationSpecification: listConfigurationSpecification,
+                          listSuppliers: listSuppliers,
+                        ),
+                      ),
+                    );
+                  
+                }),
           ],
         ),
       ),
@@ -424,6 +467,7 @@ class _HomePageState extends State<HomePage> {
                           MaterialPageRoute(
                             builder: (context) => DevicePage(
                               typeOfDevice: 0,
+                              room: 0,
                               listDevice: listDevice,
                               listTypeOfDivice: listTypeOfDivice,
                               listBrand: listBrand,
@@ -636,6 +680,7 @@ class _HomePageState extends State<HomePage> {
                           MaterialPageRoute(
                             builder: (context) => DevicePage(
                               typeOfDevice: id,
+                              room: 0,
                               listDevice: listDevice,
                               listTypeOfDivice: listTypeOfDivice,
                               listBrand: listBrand,

@@ -97,7 +97,7 @@ Widget buildDepartmentItem(BuildContext context, String image, String name,
                   ),
                   const SizedBox(height: 16),
                   LinearProgressIndicator(
-value: available / int.parse(total),
+                   value: available / int.parse(total),
                     valueColor: AlwaysStoppedAnimation<Color>(color),
                     backgroundColor: Colors.grey[200],
                   ),

@@ -17,7 +17,8 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
 
 class DevicePage extends StatefulWidget {
-  int typeOfDevice; 
+  int typeOfDevice;
+  int room; 
   List<DeviceObject> listDevice =[];
   List<TypeOfDiviceObject> listTypeOfDivice=[];
   List<BrandObject> listBrand = [];
@@ -25,14 +26,15 @@ class DevicePage extends StatefulWidget {
   List<ConfigurationDetailsObject> listConfigurationDetails = [];
   List<ConfigurationSpecificationObject> listConfigurationSpecification = [];
 
-  DevicePage({Key?key,required this.typeOfDevice,required this.listDevice,required this.listTypeOfDivice,required this.listBrand,required this.listSuppliers,required this.listConfigurationDetails, required this.listConfigurationSpecification});
+  DevicePage({Key?key,required this.typeOfDevice,required this.room,required this.listDevice,required this.listTypeOfDivice,required this.listBrand,required this.listSuppliers,required this.listConfigurationDetails, required this.listConfigurationSpecification});
 
   @override
-  _DeviceState createState() => _DeviceState(typeOfDevice:typeOfDevice,listDevice:listDevice,listTypeOfDivice: listTypeOfDivice,listBrand:listBrand,listSuppliers:listSuppliers,listConfigurationDetails:listConfigurationDetails,listConfigurationSpecification:listConfigurationSpecification);
+  _DeviceState createState() => _DeviceState(typeOfDevice:typeOfDevice,room:room,listDevice:listDevice,listTypeOfDivice: listTypeOfDivice,listBrand:listBrand,listSuppliers:listSuppliers,listConfigurationDetails:listConfigurationDetails,listConfigurationSpecification:listConfigurationSpecification);
 }
 
 class _DeviceState extends State<DevicePage> {
   int typeOfDevice;
+  int room; 
   List<DeviceObject> listDevice =[];
   List<TypeOfDiviceObject> listTypeOfDivice=[];
   List<BrandObject> listBrand = [];
@@ -43,7 +45,7 @@ class _DeviceState extends State<DevicePage> {
   bool isRefresh = false;
   List<DeviceObject> _device = [];
   List<DeviceObject> _deviceDisplay = [];
-  _DeviceState({Key?key,required this.typeOfDevice,required this.listDevice,required this.listTypeOfDivice,required this.listBrand,required this.listSuppliers,required this.listConfigurationDetails, required this.listConfigurationSpecification});
+  _DeviceState({Key?key,required this.typeOfDevice,required this.room,required this.listDevice,required this.listTypeOfDivice,required this.listBrand,required this.listSuppliers,required this.listConfigurationDetails, required this.listConfigurationSpecification});
   @override
   void initState() {
     super.initState();
@@ -60,14 +62,20 @@ class _DeviceState extends State<DevicePage> {
     }
       setState(() {
         _device = listDevice.where((listDevice){
-          return typeOfDevice == 0
+          return (typeOfDevice == 0
                             ? listDevice.Type_Of_Device_ID != typeOfDevice
-                            : listDevice.Type_Of_Device_ID == typeOfDevice;
+                            : listDevice.Type_Of_Device_ID == typeOfDevice)&&
+                  (room == 0
+                            ? listDevice.Room_ID != room
+                            : listDevice.Room_ID == room);
         }).toList();
         _deviceDisplay = listDevice.where((listDevice){
-          return typeOfDevice == 0
+          return (typeOfDevice == 0
                             ? listDevice.Type_Of_Device_ID != typeOfDevice
-                            : listDevice.Type_Of_Device_ID == typeOfDevice;
+                            : listDevice.Type_Of_Device_ID == typeOfDevice)&&
+                  (room == 0
+                            ? listDevice.Room_ID != room
+                            : listDevice.Room_ID == room);
         }).toList();
       });
     } catch (error) {
@@ -112,9 +120,12 @@ class _DeviceState extends State<DevicePage> {
                         listDevice.Warranty_Period!.toLowerCase().contains(text) ||
                         listDevice.Note!.toLowerCase().contains(text) ||
                         listDevice.Description!.toLowerCase().contains(text)) && 
-                         (typeOfDevice == 0
+                        (typeOfDevice == 0
                             ? listDevice.Type_Of_Device_ID != typeOfDevice
-                            : listDevice.Type_Of_Device_ID == typeOfDevice);
+                            : listDevice.Type_Of_Device_ID == typeOfDevice)&&
+                  (room == 0
+                            ? listDevice.Room_ID != room
+                            : listDevice.Room_ID == room);;
                   }).toList();
                 });
               },

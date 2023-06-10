@@ -3,6 +3,7 @@ import 'package:devide_manager/object/BrandObject.dart';
 import 'package:devide_manager/object/ConfigurationDetailsObject.dart';
 import 'package:devide_manager/object/ConfigurationSpecificationObject.dart';
 import 'package:devide_manager/object/DeviceObject.dart';
+import 'package:devide_manager/object/RoomObject.dart';
 import 'package:devide_manager/object/SupplierObject.dart';
 import 'package:devide_manager/provider/api_Brand.dart';
 import 'package:devide_manager/object/FacultyOject.dart';
@@ -11,6 +12,7 @@ import 'package:devide_manager/provider/api_Configuration_Details.dart';
 import 'package:devide_manager/provider/api_Confuguration_Specification.dart';
 import 'package:devide_manager/provider/api_Device.dart';
 import 'package:devide_manager/provider/api_Faculties.dart';
+import 'package:devide_manager/provider/api_Room.dart';
 import 'package:devide_manager/provider/api_Supplier.dart';
 import 'package:devide_manager/provider/api_Teacher_Information.dart';
 import 'package:devide_manager/provider/share_preferences.dart';
@@ -46,6 +48,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
   List<BrandObject> listBrand = [];
   List<SupplierObject> listSuppliers = [];
   List<FacultyObject> listFaculty =[];
+  List<RoomObject> listRoom=[];
   List<TeacherInformationObject> listUser = [];
   List<DeviceObject> listDevice = [];
   List<TypeOfDiviceObject> listTypeOfDivice = [];
@@ -73,6 +76,12 @@ class _LoadingScreenState extends State<LoadingScreen> {
     listFaculty =
         await FacultyProvider.fetchFaculty(http.Client());
     return listFaculty;
+  }
+  //Lấy danh sách phòng
+    Future<List<RoomObject>> GetListRoom() async {
+    listRoom =
+        await RoomProvider.fetchRoom(http.Client());
+    return listRoom;
   }
   //Lấy danh sách giáo viên
   Future<List<TeacherInformationObject>> GetListUser() async {
@@ -138,7 +147,8 @@ class _LoadingScreenState extends State<LoadingScreen> {
   }
   void navigateToNextScreen() async{ 
    listFaculty = await GetListFaculty();
-    listUser = await GetListUser();
+   listRoom = await GetListRoom();
+   listUser = await GetListUser();
     listDevice = await GetListDivice();
     listTypeOfDivice = await GetListTypeOfDivice();
     listBrand = await GetListBrand();
@@ -157,7 +167,8 @@ class _LoadingScreenState extends State<LoadingScreen> {
       listSuppliers: listSuppliers,
       listTypeOfDivice: listTypeOfDivice,
       listUser: listUser,
-      listFaculty: listFaculty,),
+      listFaculty: listFaculty,
+      listRoom: listRoom,),
       ),
     );
   }
