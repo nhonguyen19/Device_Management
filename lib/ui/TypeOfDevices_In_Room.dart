@@ -2,16 +2,7 @@ import 'package:devide_manager/object/DeviceObject.dart';
 import 'package:devide_manager/object/RoomObject.dart';
 import 'package:devide_manager/object/TypeOfDeviceObject.dart';
 import 'package:devide_manager/provider/api_Device.dart';
-import 'package:devide_manager/object/ConfigurationObject.dart';
-import 'package:devide_manager/provider/api_Configuration.dart';
-import 'package:devide_manager/object/ConfigurationDetailsObject.dart';
-import 'package:devide_manager/provider/api_Configuration_Details.dart';
-import 'package:devide_manager/provider/api_Room.dart';
 import 'package:devide_manager/provider/api_Type_Of_Device.dart';
-import 'package:devide_manager/ui/DeviceDetails.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:devide_manager/widget/GetTypeOfDevice.dart';
-import 'package:devide_manager/widget/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
@@ -63,15 +54,15 @@ class _Type_Of_Device_In_Room_Screen_State
   Future<void> fetchTypeOfDevice() async {
     try {
       if (!isRefresh) {
-        isRefresh=true;
-      } 
-      else {
+        isRefresh = true;
+      } else {
         listDevice = await DeviceProvider.fetchDevice(http.Client());
-               listTypeOfDivice = await TypeOfDeviceProvider.fetchTypeOfDivice(http.Client());
-               tempListDevice.clear();
-      tempListTypeOfDevice.clear();
+        listTypeOfDivice =
+            await TypeOfDeviceProvider.fetchTypeOfDivice(http.Client());
+        tempListDevice.clear();
+        tempListTypeOfDevice.clear();
       }
-      
+
       //Lấy những thiết bị trong phòng
       tempListDevice = listDevice
           .where((listDevice) => listDevice.Room_ID == room.id)
