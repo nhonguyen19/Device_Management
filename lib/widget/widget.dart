@@ -153,7 +153,7 @@ class ItemAppBar extends StatelessWidget {
             },
             child: Icon(
               Icons.arrow_back,
-              size: 30,
+              size: 30, 
               color: Colors.white,
             ),
           ),

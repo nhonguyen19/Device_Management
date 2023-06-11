@@ -1,5 +1,5 @@
 class Ngrok {
-  String ngrok = 'https://d5cd-113-165-149-26.ngrok-free.app';
+  String ngrok = 'https://1751-113-165-149-26.ngrok-free.app';
   late String api_Faculties;
   late String api_Brands;
   late String api_Devices;
