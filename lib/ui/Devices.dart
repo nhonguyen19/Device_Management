@@ -1,7 +1,9 @@
+import 'package:devide_manager/object/ConfigurationObject.dart';
 import 'package:devide_manager/object/DeviceObject.dart';
 import 'package:devide_manager/provider/api_Device.dart';
 import 'package:devide_manager/object/TypeOfDeviceObject.dart';
 import 'package:devide_manager/provider/api_Type_Of_Device.dart';
+import 'package:devide_manager/ui/Add_Device.dart';
 import 'package:devide_manager/ui/DeviceDetails.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:devide_manager/provider/api_Configuration_Details.dart';
@@ -19,33 +21,59 @@ import 'package:http/http.dart' as http;
 class DevicePage extends StatefulWidget {
   int typeOfDevice;
   int room; 
+  int bath;
   List<DeviceObject> listDevice =[];
   List<TypeOfDiviceObject> listTypeOfDivice=[];
   List<BrandObject> listBrand = [];
   List<SupplierObject> listSuppliers = [];
+  List<ConfigurationObject> listConfiguration=[];
   List<ConfigurationDetailsObject> listConfigurationDetails = [];
   List<ConfigurationSpecificationObject> listConfigurationSpecification = [];
 
-  DevicePage({Key?key,required this.typeOfDevice,required this.room,required this.listDevice,required this.listTypeOfDivice,required this.listBrand,required this.listSuppliers,required this.listConfigurationDetails, required this.listConfigurationSpecification});
+  DevicePage(
+      {Key? key,
+      required this.bath,
+      required this.typeOfDevice,
+      required this.room,
+      required this.listDevice,
+      required this.listTypeOfDivice,
+      required this.listBrand,
+      required this.listSuppliers,
+      required this.listConfiguration,
+      required this.listConfigurationDetails,
+      required this.listConfigurationSpecification});
 
   @override
-  _DeviceState createState() => _DeviceState(typeOfDevice:typeOfDevice,room:room,listDevice:listDevice,listTypeOfDivice: listTypeOfDivice,listBrand:listBrand,listSuppliers:listSuppliers,listConfigurationDetails:listConfigurationDetails,listConfigurationSpecification:listConfigurationSpecification);
+  _DeviceState createState() => _DeviceState(bath:bath,typeOfDevice:typeOfDevice,room:room,listDevice:listDevice,listTypeOfDivice: listTypeOfDivice,listBrand:listBrand,listSuppliers:listSuppliers,listConfigurationDetails:listConfigurationDetails,listConfigurationSpecification:listConfigurationSpecification,listConfiguration:listConfiguration);
 }
 
 class _DeviceState extends State<DevicePage> {
+  int bath;
   int typeOfDevice;
   int room; 
   List<DeviceObject> listDevice =[];
   List<TypeOfDiviceObject> listTypeOfDivice=[];
   List<BrandObject> listBrand = [];
   List<SupplierObject> listSuppliers = [];
+  List<ConfigurationObject> listConfiguration=[];
   List<ConfigurationDetailsObject> listConfigurationDetails = [];
   List<ConfigurationSpecificationObject> listConfigurationSpecification = [];
   bool _isSearching = false;
   bool isRefresh = false;
   List<DeviceObject> _device = [];
   List<DeviceObject> _deviceDisplay = [];
-  _DeviceState({Key?key,required this.typeOfDevice,required this.room,required this.listDevice,required this.listTypeOfDivice,required this.listBrand,required this.listSuppliers,required this.listConfigurationDetails, required this.listConfigurationSpecification});
+  _DeviceState(
+      {Key? key,
+      required this.bath,
+      required this.typeOfDevice,
+      required this.room,
+      required this.listDevice,
+      required this.listTypeOfDivice,
+      required this.listBrand,
+      required this.listSuppliers,
+      required this.listConfiguration,
+      required this.listConfigurationDetails,
+      required this.listConfigurationSpecification});
   @override
   void initState() {
     super.initState();
@@ -67,7 +95,10 @@ class _DeviceState extends State<DevicePage> {
                             : listDevice.Type_Of_Device_ID == typeOfDevice)&&
                   (room == 0
                             ? listDevice.Room_ID != room
-                            : listDevice.Room_ID == room);
+                            : listDevice.Room_ID == room)&&
+                   (bath == 0
+                            ? listDevice.Batch_Of_Goods_ID != bath
+                            : listDevice.Batch_Of_Goods_ID == bath);
         }).toList();
         _deviceDisplay = listDevice.where((listDevice){
           return (typeOfDevice == 0
@@ -75,7 +106,10 @@ class _DeviceState extends State<DevicePage> {
                             : listDevice.Type_Of_Device_ID == typeOfDevice)&&
                   (room == 0
                             ? listDevice.Room_ID != room
-                            : listDevice.Room_ID == room);
+                            : listDevice.Room_ID == room)&&
+                   (bath == 0
+                            ? listDevice.Batch_Of_Goods_ID != bath
+                            : listDevice.Batch_Of_Goods_ID == bath);
         }).toList();
       });
     } catch (error) {
@@ -87,6 +121,22 @@ class _DeviceState extends State<DevicePage> {
       );
     }
   }
+  Future<bool?> _navigateToDeviceAddScreen() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddDeviceScreen(listDevice:listDevice,
+        listConfiguration: listConfiguration,
+        listConfigurationDetails: listConfigurationDetails,
+        listTypeOfDivice: listTypeOfDivice,),
+      ),
+    );
+
+    if (result == true) {
+      return true;
+    }
+    return false;
+  }
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,8 +144,18 @@ class _DeviceState extends State<DevicePage> {
       body:RefreshIndicator(
         onRefresh: fetchDevices,
         child:  _buildDeviceList(),
-      )
-    );
+      ),
+       floatingActionButton: FloatingActionButton(
+            backgroundColor: Color.fromARGB(255, 31, 60, 114),
+            child: Icon(Icons.add),
+            onPressed: () {
+              _navigateToDeviceAddScreen().then((shouldReload) {
+                if (shouldReload == true) {
+                  fetchDevices();
+                }
+              });
+            }));
+    
   }
 
   AppBar _searchBar() {
@@ -125,7 +185,10 @@ class _DeviceState extends State<DevicePage> {
                             : listDevice.Type_Of_Device_ID == typeOfDevice)&&
                   (room == 0
                             ? listDevice.Room_ID != room
-                            : listDevice.Room_ID == room);;
+                            : listDevice.Room_ID == room)&&
+                   (bath == 0
+                            ? listDevice.Batch_Of_Goods_ID != bath
+                            : listDevice.Batch_Of_Goods_ID == bath);
                   }).toList();
                 });
               },

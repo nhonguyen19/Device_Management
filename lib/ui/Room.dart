@@ -1,11 +1,13 @@
 import 'package:devide_manager/object/BrandObject.dart';
 import 'package:devide_manager/object/ConfigurationDetailsObject.dart';
+import 'package:devide_manager/object/ConfigurationObject.dart';
 import 'package:devide_manager/object/ConfigurationSpecificationObject.dart';
 import 'package:devide_manager/object/DeviceObject.dart';
 import 'package:devide_manager/object/RoomObject.dart';
 import 'package:devide_manager/object/SupplierObject.dart';
 import 'package:devide_manager/object/TypeOfDeviceObject.dart';
 import 'package:devide_manager/provider/api_Brand.dart';
+import 'package:devide_manager/provider/api_Configuration.dart';
 import 'package:devide_manager/provider/api_Configuration_Details.dart';
 import 'package:devide_manager/provider/api_Confuguration_Specification.dart';
 import 'package:devide_manager/provider/api_Device.dart';
@@ -23,6 +25,7 @@ class RoomScreen extends StatefulWidget {
   List<TypeOfDiviceObject> listTypeOfDivice;
   List<BrandObject> listBrand ;
   List<SupplierObject> listSuppliers;
+  List<ConfigurationObject> listConfiguration;
   List<ConfigurationDetailsObject> listConfigurationDetails ;
   List<ConfigurationSpecificationObject> listConfigurationSpecification ;
   RoomScreen(
@@ -32,6 +35,7 @@ class RoomScreen extends StatefulWidget {
     required this.listTypeOfDivice,
     required this.listBrand,
     required this.listSuppliers,
+    required this.listConfiguration,
     required this.listConfigurationDetails,
     required this.listConfigurationSpecification,});
 
@@ -42,6 +46,7 @@ class RoomScreen extends StatefulWidget {
       listTypeOfDivice: listTypeOfDivice,
       listBrand: listBrand,
       listSuppliers: listSuppliers,
+      listConfiguration:listConfiguration,
       listConfigurationDetails: listConfigurationDetails,
       listConfigurationSpecification: listConfigurationSpecification,);
 }
@@ -52,6 +57,7 @@ class _RoomScreenState extends State<RoomScreen> {
   List<TypeOfDiviceObject> listTypeOfDivice;
   List<BrandObject> listBrand ;
   List<SupplierObject> listSuppliers;
+  List<ConfigurationObject> listConfiguration;
   List<ConfigurationDetailsObject> listConfigurationDetails ;
   List<ConfigurationSpecificationObject> listConfigurationSpecification ;
   bool _isSearching = false;
@@ -64,6 +70,7 @@ class _RoomScreenState extends State<RoomScreen> {
     required this.listTypeOfDivice,
     required this.listBrand,
     required this.listSuppliers,
+    required this.listConfiguration,
     required this.listConfigurationDetails,
     required this.listConfigurationSpecification,
   });
@@ -86,6 +93,9 @@ class _RoomScreenState extends State<RoomScreen> {
             await TypeOfDeviceProvider.fetchTypeOfDivice(http.Client());
         listBrand = await BrandProvide.fetchBrand(http.Client());
         listSuppliers = await SupplierProvider.fetchSupplier(http.Client());
+         listConfiguration =
+            await ConfigurationProvide.fetchConfiguration(
+                http.Client());
         listConfigurationDetails =
             await ConfigurationDetailsProvide.fetchConfigurationDetails(
                 http.Client());
@@ -211,6 +221,7 @@ class _RoomScreenState extends State<RoomScreen> {
         listTypeOfDivice: listTypeOfDivice,
         room: _roomsDisplay[index],
         listBrand: listBrand,
+        listConfiguration:listConfiguration,
         listConfigurationDetails: listConfigurationDetails,
         listConfigurationSpecification: listConfigurationSpecification,
         listSuppliers: listSuppliers,
@@ -230,7 +241,8 @@ class _RoomScreenState extends State<RoomScreen> {
             .fetchConfigurationSpecification(http.Client());
   });
 },
-              )),
+              )
+              ),
         ],
       ),
     );

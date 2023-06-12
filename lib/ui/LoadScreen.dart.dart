@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'package:devide_manager/object/BatchOfGoodObject.dart';
 import 'package:devide_manager/object/BrandObject.dart';
 import 'package:devide_manager/object/ConfigurationDetailsObject.dart';
 import 'package:devide_manager/object/ConfigurationSpecificationObject.dart';
 import 'package:devide_manager/object/DeviceObject.dart';
 import 'package:devide_manager/object/RoomObject.dart';
 import 'package:devide_manager/object/SupplierObject.dart';
+import 'package:devide_manager/provider/api_Batch_Of_Goods.dart';
 import 'package:devide_manager/provider/api_Brand.dart';
 import 'package:devide_manager/object/FacultyOject.dart';
 import 'package:devide_manager/object/TeacherInformationObject.dart';
@@ -51,6 +53,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
   List<RoomObject> listRoom=[];
   List<TeacherInformationObject> listUser = [];
   List<DeviceObject> listDevice = [];
+  List<BatchOfGoodObject> listBatchOfGood =[];
   List<TypeOfDiviceObject> listTypeOfDivice = [];
   List<ConfigurationObject> listConfiguration = [];
   List<ConfigurationDetailsObject> listConfigurationDetails = [];
@@ -89,7 +92,10 @@ class _LoadingScreenState extends State<LoadingScreen> {
         await TeacherInformationProvider.fetchTeacherInformation(http.Client());
     return listUser;
   }
-
+  Future<List<BatchOfGoodObject>> GetListBatchOfGood() async {
+    listBatchOfGood = await BatchOfGoodProvide.fetchBatchOfGood(http.Client());
+    return listBatchOfGood;
+  }
   Future<List<DeviceObject>> GetListDivice() async {
     listDevice = await DeviceProvider.fetchDevice(http.Client());
     return listDevice;
@@ -150,6 +156,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
    listRoom = await GetListRoom();
    listUser = await GetListUser();
     listDevice = await GetListDivice();
+    listBatchOfGood = await GetListBatchOfGood();
     listTypeOfDivice = await GetListTypeOfDivice();
     listBrand = await GetListBrand();
     listSuppliers = await GetListSuppliers();
@@ -164,6 +171,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
       listConfigurationDetails: listConfigurationDetails,
       listConfigurationSpecification: listConfigurationSpecification,
       listDevice: listDevice,
+      listBatchOfGood:listBatchOfGood,
       listSuppliers: listSuppliers,
       listTypeOfDivice: listTypeOfDivice,
       listUser: listUser,

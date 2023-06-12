@@ -1,5 +1,6 @@
 import 'package:devide_manager/object/BrandObject.dart';
 import 'package:devide_manager/object/ConfigurationDetailsObject.dart';
+import 'package:devide_manager/object/ConfigurationObject.dart';
 import 'package:devide_manager/object/ConfigurationSpecificationObject.dart';
 import 'package:devide_manager/object/DeviceObject.dart';
 import 'package:devide_manager/object/RoomObject.dart';
@@ -23,6 +24,7 @@ class Type_Of_Device_In_Room_Screen extends StatefulWidget {
   List<TypeOfDiviceObject> listTypeOfDivice;
   List<BrandObject> listBrand ;
   List<SupplierObject> listSuppliers;
+  List<ConfigurationObject> listConfiguration;
   List<ConfigurationDetailsObject> listConfigurationDetails ;
   List<ConfigurationSpecificationObject> listConfigurationSpecification ;
   Type_Of_Device_In_Room_Screen(
@@ -32,6 +34,7 @@ class Type_Of_Device_In_Room_Screen extends StatefulWidget {
       required this.listTypeOfDivice,
     required this.listBrand,
     required this.listSuppliers,
+    required this.listConfiguration,
     required this.listConfigurationDetails,
     required this.listConfigurationSpecification
       });
@@ -44,6 +47,7 @@ class Type_Of_Device_In_Room_Screen extends StatefulWidget {
           listTypeOfDivice: listTypeOfDivice,
           listBrand: listBrand,
         listSuppliers: listSuppliers,
+        listConfiguration:listConfiguration,
         listConfigurationDetails: listConfigurationDetails,
         listConfigurationSpecification: listConfigurationSpecification,);
 }
@@ -55,6 +59,7 @@ class _Type_Of_Device_In_Room_Screen_State
   List<TypeOfDiviceObject> listTypeOfDivice;
     List<BrandObject> listBrand ;
   List<SupplierObject> listSuppliers;
+  List<ConfigurationObject> listConfiguration;
   List<ConfigurationDetailsObject> listConfigurationDetails ;
   List<ConfigurationSpecificationObject> listConfigurationSpecification ;
   bool _isSearching = false;
@@ -69,6 +74,7 @@ class _Type_Of_Device_In_Room_Screen_State
       required this.listTypeOfDivice,
     required this.listBrand,
     required this.listSuppliers,
+    required this.listConfiguration,
     required this.listConfigurationDetails,
     required this.listConfigurationSpecification});
   bool isRefresh = false;
@@ -237,12 +243,14 @@ class _Type_Of_Device_In_Room_Screen_State
                           context,
                           MaterialPageRoute(
                             builder: (context) => DevicePage(
+                              bath:0,
                               typeOfDevice: _type_Of_Devices_Display[index].Type_Of_Device_ID!,
                               room: room.id!,
                               listDevice: listDevice,
                               listTypeOfDivice: listTypeOfDivice,
                               listBrand: listBrand,
                               listSuppliers: listSuppliers,
+                              listConfiguration:listConfiguration,
                               listConfigurationDetails:
                                   listConfigurationDetails,
                               listConfigurationSpecification:

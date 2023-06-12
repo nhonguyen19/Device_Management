@@ -1,6 +1,7 @@
 class Ngrok {
-  String ngrok = 'https://1751-113-165-149-26.ngrok-free.app';
+  String ngrok = 'https://1ef4-113-165-149-26.ngrok-free.app';
   late String api_Faculties;
+  late String api_Batch_Of_Goods;
   late String api_Brands;
   late String api_Devices;
   late String api_Rooms;
@@ -13,6 +14,7 @@ class Ngrok {
 
   Ngrok() {
     api_Faculties = ngrok + '/api/faculties';
+    api_Batch_Of_Goods = ngrok + '/api/batches';
     api_Brands = ngrok + '/api/brands';
     api_Devices = ngrok + '/api/devices';
     api_Rooms = ngrok + '/api/rooms';

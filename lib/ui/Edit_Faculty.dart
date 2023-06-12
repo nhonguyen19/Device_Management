@@ -19,6 +19,8 @@ class _EditFacultyScreenState extends State<EditFacultyScreen> {
   TextEditingController _nameController = TextEditingController();
   File? _image;
   bool _isLoading = false;
+  bool isChoose = false;
+  late String oldImage;
   late FacultyObject facultyObject;
 
   List<Map<String, dynamic>> statusOptions = [
@@ -32,6 +34,7 @@ class _EditFacultyScreenState extends State<EditFacultyScreen> {
     super.initState();
     _nameController.text = widget.faculty.facultyName!;
     selectedStatus = widget.faculty.status!;
+    oldImage= widget.faculty.image!;
   }
 
   @override
@@ -47,13 +50,14 @@ class _EditFacultyScreenState extends State<EditFacultyScreen> {
 
     String newName = _nameController.text;
     int newStatus = int.parse(selectedStatus.toString());
-    String imagePath = _image != null ? _image!.path : '';
+    String imagePath = _image != null ? _image!.path: oldImage;
 
     try {
       bool isSuccess = await FacultyProvider.updateFaculty(
         facultyID: widget.faculty.facultyID!,
         name: newName,
         imagePath: imagePath,
+        isChoose: isChoose,
         status: newStatus,
       );
 
@@ -108,15 +112,11 @@ class _EditFacultyScreenState extends State<EditFacultyScreen> {
                     image: FileImage(_image!),
                     fit: BoxFit.cover,
                   )
-                : null,
+                : DecorationImage(
+                    image: NetworkImage(oldImage!),
+                    fit: BoxFit.cover,
+                  ),
           ),
-          child: _image == null
-              ? Icon(
-                  Icons.camera_alt,
-                  size: 30,
-                  color: Colors.white,
-                )
-              : null,
         ),
         SizedBox(height: 8.0),
         ElevatedButton(
@@ -138,7 +138,9 @@ class _EditFacultyScreenState extends State<EditFacultyScreen> {
       setState(() {
         _image = File(pickedImage.path);
       });
+      isChoose = true;
     }
+    
   }
 
   @override

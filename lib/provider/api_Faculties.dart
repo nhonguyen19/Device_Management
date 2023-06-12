@@ -73,6 +73,7 @@ class FacultyProvider {
       {required int facultyID,
       String? name,
       String? imagePath,
+      bool? isChoose,
       int? status}) async {
     try {
       Ngrok ngrok = Ngrok();
@@ -83,7 +84,7 @@ class FacultyProvider {
         body['Faculty_Name'] = name;
       }
 
-      if (imagePath != null) {
+      if (imagePath != null && isChoose == true) {
         File imageFile = File(imagePath);
 
         if (!imageFile.existsSync()) {
@@ -101,6 +102,8 @@ class FacultyProvider {
         final imageUrl = await storageRef.child(fileName).getDownloadURL();
 
         body['Image'] = imageUrl;
+      }else{
+        body['Image'] = imagePath;
       }
 
       if (status != null) {
