@@ -1,8 +1,10 @@
+import 'package:devide_manager/object/BatchOfGoodObject.dart';
 import 'package:devide_manager/object/BrandObject.dart';
 import 'package:devide_manager/object/ConfigurationDetailsObject.dart';
 import 'package:devide_manager/object/ConfigurationSpecificationObject.dart';
 import 'package:devide_manager/object/DeviceObject.dart';
 import 'package:devide_manager/object/SupplierObject.dart';
+import 'package:devide_manager/provider/api_Batch_Of_Goods.dart';
 import 'package:devide_manager/provider/api_Brand.dart';
 import 'package:devide_manager/object/FacultyOject.dart';
 import 'package:devide_manager/object/TeacherInformationObject.dart';
@@ -14,6 +16,7 @@ import 'package:devide_manager/provider/api_Room.dart';
 import 'package:devide_manager/provider/api_Supplier.dart';
 import 'package:devide_manager/provider/api_Teacher_Information.dart';
 import 'package:devide_manager/provider/share_preferences.dart';
+import 'package:devide_manager/ui/Batch_Of_Good.dart';
 import 'package:devide_manager/ui/Brand.dart';
 import 'package:devide_manager/ui/Configuration.dart';
 import 'package:devide_manager/ui/Devices.dart';
@@ -42,6 +45,7 @@ class HomePage extends StatefulWidget {
   List<RoomObject> listRoom=[];
   List<TeacherInformationObject> listUser = [];
   List<DeviceObject> listDevice = [];
+  List<BatchOfGoodObject> listBatchOfGood =[];
   List<TypeOfDiviceObject> listTypeOfDivice = [];
   List<ConfigurationObject> listConfiguration = [];
   List<ConfigurationDetailsObject> listConfigurationDetails = [];
@@ -56,6 +60,7 @@ class HomePage extends StatefulWidget {
       required this.listFaculty,
       required this.listRoom,
       required this.listDevice,
+      required this.listBatchOfGood,
       required this.listTypeOfDivice,
       required this.listConfiguration,
       required this.listConfigurationDetails,
@@ -72,6 +77,7 @@ class HomePage extends StatefulWidget {
       listConfigurationDetails: listConfigurationDetails,
       listConfigurationSpecification: listConfigurationSpecification,
       listDevice: listDevice,
+      listBatchOfGood:listBatchOfGood,
       listSuppliers: listSuppliers,
       listTypeOfDivice: listTypeOfDivice,
       listUser: listUser,
@@ -87,6 +93,7 @@ class _HomePageState extends State<HomePage> {
   List<RoomObject> listRoom= [];
   List<TeacherInformationObject> listUser = [];
   List<DeviceObject> listDevice = [];
+  List<BatchOfGoodObject> listBatchOfGood =[];
   List<TypeOfDiviceObject> listTypeOfDivice = [];
   List<ConfigurationObject> listConfiguration = [];
   List<ConfigurationDetailsObject> listConfigurationDetails = [];
@@ -102,6 +109,7 @@ class _HomePageState extends State<HomePage> {
       required this.listRoom,
       required this.listUser,
       required this.listDevice,
+      required this.listBatchOfGood,
       required this.listTypeOfDivice,
       required this.listConfiguration,
       required this.listConfigurationDetails,
@@ -132,6 +140,11 @@ class _HomePageState extends State<HomePage> {
     listUser =
         await TeacherInformationProvider.fetchTeacherInformation(http.Client());
     return listUser;
+  }
+  //Lấy danh sách lô hàng
+  Future<List<BatchOfGoodObject>> GetListBatchOfGood() async {
+    listBatchOfGood = await BatchOfGoodProvide.fetchBatchOfGood(http.Client());
+    return listBatchOfGood;
   }
   //Lấy danh sách thiết bị
   Future<List<DeviceObject>> GetListDivice() async {
@@ -180,6 +193,7 @@ class _HomePageState extends State<HomePage> {
     listRoom = await GetListRoom();
     listUser = await GetListUser();
     listDevice = await GetListDivice();
+    listBatchOfGood = await GetListBatchOfGood();
     listTypeOfDivice = await GetListTypeOfDivice();
     listBrand = await GetListBrand();
     listSuppliers = await GetListSuppliers();
@@ -346,8 +360,42 @@ class _HomePageState extends State<HomePage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => RoomScreen(listRoom: listRoom,
-                          listDevice: listDevice, listTypeOfDivice: listTypeOfDivice, 
+                        builder: (context) => RoomScreen(
+                          listRoom: listRoom,
+                          listDevice: listDevice,
+                          listTypeOfDivice: listTypeOfDivice,
+                          listBrand: listBrand,
+                          listConfiguration:listConfiguration,
+                          listConfigurationDetails: listConfigurationDetails,
+                          listConfigurationSpecification: listConfigurationSpecification,
+                          listSuppliers: listSuppliers,
+                        ),
+                      ),
+                    );
+                  
+                }),
+                 ListTile(
+                leading: Image.asset(
+                  'assets/Icon/batch.png',
+                  width: 30,
+                  height: 30,
+                  fit: BoxFit.cover,
+                ),
+                title: const Text('Lô hàng'),
+                onTap: ()  {
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Batch_Of_GoodsScreen(
+                          listBatchOfGood: listBatchOfGood,
+                          listDevice: listDevice,
+                          listTypeOfDivice: listTypeOfDivice,
+                          listBrand: listBrand,
+                          listConfiguration:listConfiguration,
+                          listConfigurationDetails: listConfigurationDetails,
+                          listConfigurationSpecification: listConfigurationSpecification,
+                          listSuppliers: listSuppliers,
                         ),
                       ),
                     );
@@ -460,11 +508,14 @@ class _HomePageState extends State<HomePage> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => DevicePage(
+                              bath:0,
                               typeOfDevice: 0,
+                              room: 0,
                               listDevice: listDevice,
                               listTypeOfDivice: listTypeOfDivice,
                               listBrand: listBrand,
                               listSuppliers: listSuppliers,
+                              listConfiguration:listConfiguration,
                               listConfigurationDetails:
                                   listConfigurationDetails,
                               listConfigurationSpecification:
@@ -672,11 +723,14 @@ class _HomePageState extends State<HomePage> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => DevicePage(
+                              bath:0,
                               typeOfDevice: id,
+                              room: 0,
                               listDevice: listDevice,
                               listTypeOfDivice: listTypeOfDivice,
                               listBrand: listBrand,
                               listSuppliers: listSuppliers,
+                              listConfiguration:listConfiguration,
                               listConfigurationDetails:
                                   listConfigurationDetails,
                               listConfigurationSpecification:

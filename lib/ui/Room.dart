@@ -1,8 +1,18 @@
+import 'package:devide_manager/object/BrandObject.dart';
+import 'package:devide_manager/object/ConfigurationDetailsObject.dart';
+import 'package:devide_manager/object/ConfigurationObject.dart';
+import 'package:devide_manager/object/ConfigurationSpecificationObject.dart';
 import 'package:devide_manager/object/DeviceObject.dart';
 import 'package:devide_manager/object/RoomObject.dart';
+import 'package:devide_manager/object/SupplierObject.dart';
 import 'package:devide_manager/object/TypeOfDeviceObject.dart';
+import 'package:devide_manager/provider/api_Brand.dart';
+import 'package:devide_manager/provider/api_Configuration.dart';
+import 'package:devide_manager/provider/api_Configuration_Details.dart';
+import 'package:devide_manager/provider/api_Confuguration_Specification.dart';
 import 'package:devide_manager/provider/api_Device.dart';
 import 'package:devide_manager/provider/api_Room.dart';
+import 'package:devide_manager/provider/api_Supplier.dart';
 import 'package:devide_manager/provider/api_Type_Of_Device.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -13,39 +23,62 @@ class RoomScreen extends StatefulWidget {
   List<RoomObject> listRoom;
   List<DeviceObject> listDevice;
   List<TypeOfDiviceObject> listTypeOfDivice;
+  List<BrandObject> listBrand ;
+  List<SupplierObject> listSuppliers;
+  List<ConfigurationObject> listConfiguration;
+  List<ConfigurationDetailsObject> listConfigurationDetails ;
+  List<ConfigurationSpecificationObject> listConfigurationSpecification ;
   RoomScreen(
       {Key? key,
       required this.listRoom,
-      required this.listDevice,
-      required this.listTypeOfDivice});
+    required this.listDevice,
+    required this.listTypeOfDivice,
+    required this.listBrand,
+    required this.listSuppliers,
+    required this.listConfiguration,
+    required this.listConfigurationDetails,
+    required this.listConfigurationSpecification,});
 
   @override
   _RoomScreenState createState() => _RoomScreenState(
       listRoom: listRoom,
       listDevice: listDevice,
-      listTypeOfDivice: listTypeOfDivice);
+      listTypeOfDivice: listTypeOfDivice,
+      listBrand: listBrand,
+      listSuppliers: listSuppliers,
+      listConfiguration:listConfiguration,
+      listConfigurationDetails: listConfigurationDetails,
+      listConfigurationSpecification: listConfigurationSpecification,);
 }
 
 class _RoomScreenState extends State<RoomScreen> {
   List<RoomObject> listRoom;
   List<DeviceObject> listDevice;
   List<TypeOfDiviceObject> listTypeOfDivice;
+  List<BrandObject> listBrand ;
+  List<SupplierObject> listSuppliers;
+  List<ConfigurationObject> listConfiguration;
+  List<ConfigurationDetailsObject> listConfigurationDetails ;
+  List<ConfigurationSpecificationObject> listConfigurationSpecification ;
   bool _isSearching = false;
   List<RoomObject> _rooms = [];
   List<RoomObject> _roomsDisplay = [];
-  _RoomScreenState(
-      {Key? key,
-      required this.listRoom,
-      required this.listDevice,
-      required this.listTypeOfDivice});
+  _RoomScreenState({
+    Key? key,
+    required this.listRoom,
+    required this.listDevice,
+    required this.listTypeOfDivice,
+    required this.listBrand,
+    required this.listSuppliers,
+    required this.listConfiguration,
+    required this.listConfigurationDetails,
+    required this.listConfigurationSpecification,
+  });
   bool isRefresh = false;
-  List<DeviceObject> tempListDevice = [];
-  List<TypeOfDiviceObject> tempListTypeOfDivice = [];
   @override
   void initState() {
     super.initState();
     fetchRooms();
-    tempListTypeOfDivice.clear();
   }
 
   Future<void> fetchRooms() async {
@@ -53,12 +86,21 @@ class _RoomScreenState extends State<RoomScreen> {
       if (!isRefresh) {
         listRoom = listRoom;
         isRefresh = true;
-        tempListTypeOfDivice.clear();
       } else {
         listRoom = await RoomProvider.fetchRoom(http.Client());
         listDevice = await DeviceProvider.fetchDevice(http.Client());
         listTypeOfDivice =
             await TypeOfDeviceProvider.fetchTypeOfDivice(http.Client());
+        listBrand = await BrandProvide.fetchBrand(http.Client());
+        listSuppliers = await SupplierProvider.fetchSupplier(http.Client());
+         listConfiguration =
+            await ConfigurationProvide.fetchConfiguration(
+                http.Client());
+        listConfigurationDetails =
+            await ConfigurationDetailsProvide.fetchConfigurationDetails(
+                http.Client());
+        listConfigurationSpecification = await ConfigurationSpecificationProvide
+            .fetchConfigurationSpecification(http.Client());
       }
       setState(() {
         _rooms = listRoom;
@@ -170,18 +212,37 @@ class _RoomScreenState extends State<RoomScreen> {
               ),
               trailing: IconButton(
                 icon: Icon(Icons.arrow_right),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => Type_Of_Device_In_Room_Screen(
-                          listDevice: listDevice,
-                          listTypeOfDivice: listTypeOfDivice,
-                          room: _roomsDisplay[index]),
-                    ),
-                  );
-                },
-              )),
+               onPressed: () async {
+  await Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => Type_Of_Device_In_Room_Screen(
+        listDevice: listDevice,
+        listTypeOfDivice: listTypeOfDivice,
+        room: _roomsDisplay[index],
+        listBrand: listBrand,
+        listConfiguration:listConfiguration,
+        listConfigurationDetails: listConfigurationDetails,
+        listConfigurationSpecification: listConfigurationSpecification,
+        listSuppliers: listSuppliers,
+      ),
+    ),
+  ).then((result) async {
+          listRoom = await RoomProvider.fetchRoom(http.Client());
+        listDevice = await DeviceProvider.fetchDevice(http.Client());
+        listTypeOfDivice =
+            await TypeOfDeviceProvider.fetchTypeOfDivice(http.Client());
+        listBrand = await BrandProvide.fetchBrand(http.Client());
+        listSuppliers = await SupplierProvider.fetchSupplier(http.Client());
+        listConfigurationDetails =
+            await ConfigurationDetailsProvide.fetchConfigurationDetails(
+                http.Client());
+        listConfigurationSpecification = await ConfigurationSpecificationProvide
+            .fetchConfigurationSpecification(http.Client());
+  });
+},
+              )
+              ),
         ],
       ),
     );

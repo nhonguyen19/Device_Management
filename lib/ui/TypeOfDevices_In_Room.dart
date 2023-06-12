@@ -1,28 +1,56 @@
+import 'package:devide_manager/object/BrandObject.dart';
+import 'package:devide_manager/object/ConfigurationDetailsObject.dart';
+import 'package:devide_manager/object/ConfigurationObject.dart';
+import 'package:devide_manager/object/ConfigurationSpecificationObject.dart';
 import 'package:devide_manager/object/DeviceObject.dart';
 import 'package:devide_manager/object/RoomObject.dart';
+import 'package:devide_manager/object/SupplierObject.dart';
 import 'package:devide_manager/object/TypeOfDeviceObject.dart';
 import 'package:devide_manager/provider/api_Device.dart';
+import 'package:devide_manager/object/ConfigurationObject.dart';
+import 'package:devide_manager/provider/api_Configuration.dart';
+import 'package:devide_manager/object/ConfigurationDetailsObject.dart';
+import 'package:devide_manager/provider/api_Configuration_Details.dart';
+import 'package:devide_manager/provider/api_Room.dart';
 import 'package:devide_manager/provider/api_Type_Of_Device.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
 
+import 'Devices.dart';
+
 class Type_Of_Device_In_Room_Screen extends StatefulWidget {
   RoomObject room;
   List<DeviceObject> listDevice;
   List<TypeOfDiviceObject> listTypeOfDivice;
+  List<BrandObject> listBrand ;
+  List<SupplierObject> listSuppliers;
+  List<ConfigurationObject> listConfiguration;
+  List<ConfigurationDetailsObject> listConfigurationDetails ;
+  List<ConfigurationSpecificationObject> listConfigurationSpecification ;
   Type_Of_Device_In_Room_Screen(
       {Key? key,
       required this.room,
       required this.listDevice,
-      required this.listTypeOfDivice});
+      required this.listTypeOfDivice,
+    required this.listBrand,
+    required this.listSuppliers,
+    required this.listConfiguration,
+    required this.listConfigurationDetails,
+    required this.listConfigurationSpecification
+      });
 
   @override
   _Type_Of_Device_In_Room_Screen_State createState() =>
       _Type_Of_Device_In_Room_Screen_State(
           room: room,
           listDevice: listDevice,
-          listTypeOfDivice: listTypeOfDivice);
+          listTypeOfDivice: listTypeOfDivice,
+          listBrand: listBrand,
+        listSuppliers: listSuppliers,
+        listConfiguration:listConfiguration,
+        listConfigurationDetails: listConfigurationDetails,
+        listConfigurationSpecification: listConfigurationSpecification,);
 }
 
 class _Type_Of_Device_In_Room_Screen_State
@@ -30,6 +58,11 @@ class _Type_Of_Device_In_Room_Screen_State
   RoomObject room;
   List<DeviceObject> listDevice;
   List<TypeOfDiviceObject> listTypeOfDivice;
+    List<BrandObject> listBrand ;
+  List<SupplierObject> listSuppliers;
+  List<ConfigurationObject> listConfiguration;
+  List<ConfigurationDetailsObject> listConfigurationDetails ;
+  List<ConfigurationSpecificationObject> listConfigurationSpecification ;
   bool _isSearching = false;
   List<TypeOfDiviceObject> _type_Of_Devices = [];
   List<TypeOfDiviceObject> _type_Of_Devices_Display = [];
@@ -39,7 +72,12 @@ class _Type_Of_Device_In_Room_Screen_State
       {Key? key,
       required this.room,
       required this.listDevice,
-      required this.listTypeOfDivice});
+      required this.listTypeOfDivice,
+    required this.listBrand,
+    required this.listSuppliers,
+    required this.listConfiguration,
+    required this.listConfigurationDetails,
+    required this.listConfigurationSpecification});
   bool isRefresh = false;
   @override
   void initState() {
@@ -57,15 +95,14 @@ class _Type_Of_Device_In_Room_Screen_State
         isRefresh = true;
       } else {
         listDevice = await DeviceProvider.fetchDevice(http.Client());
-        listTypeOfDivice =
-            await TypeOfDeviceProvider.fetchTypeOfDivice(http.Client());
-        tempListDevice.clear();
-        tempListTypeOfDevice.clear();
+               listTypeOfDivice = await TypeOfDeviceProvider.fetchTypeOfDivice(http.Client());
+               tempListDevice.clear();
+      tempListTypeOfDevice.clear();
       }
 
       //Lấy những thiết bị trong phòng
       tempListDevice = listDevice
-          .where((listDevice) => listDevice.Room_ID == room.id)
+          .where((DeviceObject) => DeviceObject.Room_ID == room.id)
           .toList();
 
       //Lấy những loại thiết bị trong phòng đó
@@ -187,14 +224,34 @@ class _Type_Of_Device_In_Room_Screen_State
                 ),
               ),
               subtitle: Text(
-                'số lượng: ${listDevice.where((listDevice) => listDevice.Type_Of_Device_ID == _type_Of_Devices_Display[index].Type_Of_Device_ID).length}',
+                'số lượng: ${tempListDevice.where((tempListDevice) => tempListDevice.Type_Of_Device_ID == _type_Of_Devices_Display[index].Type_Of_Device_ID).length}',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                 ),
               ),
               trailing: IconButton(
                 icon: Icon(Icons.arrow_right),
-                onPressed: () {},
+                onPressed: () {
+                   Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DevicePage(
+                              bath:0,
+                              typeOfDevice: _type_Of_Devices_Display[index].Type_Of_Device_ID!,
+                              room: room.id!,
+                              listDevice: listDevice,
+                              listTypeOfDivice: listTypeOfDivice,
+                              listBrand: listBrand,
+                              listSuppliers: listSuppliers,
+                              listConfiguration:listConfiguration,
+                              listConfigurationDetails:
+                                  listConfigurationDetails,
+                              listConfigurationSpecification:
+                                  listConfigurationSpecification,
+                            ),
+                          ),
+                        );
+                },
               )),
         ],
       ),

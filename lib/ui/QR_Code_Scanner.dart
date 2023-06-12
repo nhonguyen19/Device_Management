@@ -62,6 +62,7 @@ class QRScannerScreen extends StatefulWidget {
 
 class _QRScannerScreenState extends State<QRScannerScreen> {
   bool Sreach = false;
+  bool isNotFound = true;
   List<DeviceObject> listDevice = [];
   List<TypeOfDiviceObject> listTypeOfDivice = [];
   List<BrandObject> listBrand = [];
@@ -89,12 +90,12 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    QRCode = '';
     Size screenSize = MediaQuery.of(context).size;
     double screenWidth = screenSize.width;
     double screenHeight = screenSize.height;
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color.fromARGB(255, 31, 60, 114),
         title: Text('QR Scanner'),
       ),
       body: Column(
@@ -127,8 +128,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
               ),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: QRCode == ''
-                ? QRView(
+            child:QRView(
                     key: qrKey,
                     onQRViewCreated: _onQRViewCreated,
                     overlay: QrScannerOverlayShape(
@@ -136,17 +136,19 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                       cutOutSize: 300,
                     ),
                   )
-                : Center(
-                    child: SpinKitChasingDots(
-                      color: Color.fromARGB(255, 31, 60, 114),
-                      size: 50,
-                    ),
-                  ),
+               
           ),
+          Padding(padding: 
+          EdgeInsets.symmetric(vertical: 10),
+          child: Text(isNotFound == true && QRCode != '' ? 'Không tìm thấy' : '' ,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18
+          ),),),
           Expanded(
             flex: 1,
             child: Center(
-              child: Text('Scanned QR: $QRCode'),
+              child: Text('Scanned QR: ${QRCode}'),
             ),
           ),
         ],
@@ -154,27 +156,30 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
     );
   }
 
-  void _onQRViewCreated(QRViewController controller) {
-    this.controller = controller;
-    controller.scannedDataStream.listen((scanData) {
-      setState(() {
-        QRCode = scanData.code!;
-      });
-
-      // Xử lý logic sau khi quét QR Code thành công
-      if (!Sreach) {
-        Sreach = true;
-        _handleQRCodeScan();
-      }
+ void _onQRViewCreated(QRViewController controller) {
+  this.controller = controller;
+  controller.scannedDataStream.listen((scanData) {
+    setState(() {
+      QRCode = scanData.code!;
     });
-  }
+    // Xử lý logic sau khi quét QR Code thành công
+    if (!Sreach) {
+      isNotFound = true;
+      _handleQRCodeScan();
+    }
+  });
+}
 
   void _handleQRCodeScan() async {
     for (var item in listDevice) {
-      if (item.QRCode == QRCode) device = item;
+      if (item.QRCode == QRCode) {
+        device = item;
+        isNotFound = false;
+      }
     }
-    if (device != null) {
-      if (await Navigator.push(
+    if(isNotFound==false){     
+            Sreach = true;
+      Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => Device_Details(
@@ -186,10 +191,23 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                   listConfigurationSpecification:
                       listConfigurationSpecification),
             ),
-          ) ==
-          false) {
-        Sreach = false;
+          ).then((result) async {
+            Sreach = false;
+            isNotFound = true;
+            QRCode='';
+        listDevice = await DeviceProvider.fetchDevice(http.Client());
+        listTypeOfDivice =
+            await TypeOfDeviceProvider.fetchTypeOfDivice(http.Client());
+        listBrand = await BrandProvide.fetchBrand(http.Client());
+        listSuppliers = await SupplierProvider.fetchSupplier(http.Client());
+        listConfigurationDetails =
+            await ConfigurationDetailsProvide.fetchConfigurationDetails(
+                http.Client());
+        listConfigurationSpecification = await ConfigurationSpecificationProvide
+            .fetchConfigurationSpecification(http.Client());
+          
+  });
       }
+    
     }
   }
-}
