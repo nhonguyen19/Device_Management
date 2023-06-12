@@ -14,10 +14,10 @@ import 'package:http/http.dart' as http;
 
 class User extends StatefulWidget {
   List<TeacherInformationObject> listUser;
-  User({Key?key,required this.listUser});
+  User({Key? key, required this.listUser});
 
   @override
-  _UserState createState() => _UserState(listUser:listUser);
+  _UserState createState() => _UserState(listUser: listUser);
 }
 
 class _UserState extends State<User> {
@@ -25,22 +25,23 @@ class _UserState extends State<User> {
   bool _isSearching = false;
   List<TeacherInformationObject> _user = [];
   List<TeacherInformationObject> _userDisplay = [];
-  _UserState({Key?key,required this.listUser});
-  bool isRefresh=false;
+  _UserState({Key? key, required this.listUser});
+  bool isRefresh = false;
   @override
   void initState() {
     super.initState();
     fetchUsers();
   }
- 
+
   Future<void> fetchUsers() async {
     try {
-      if(!isRefresh){
-      listUser=listUser;
-      isRefresh = true;
-    }else{
-      listUser = await TeacherInformationProvider.fetchTeacherInformation(http.Client());
-    }
+      if (!isRefresh) {
+        listUser = listUser;
+        isRefresh = true;
+      } else {
+        listUser = await TeacherInformationProvider.fetchTeacherInformation(
+            http.Client());
+      }
       setState(() {
         _user = listUser;
         _userDisplay = listUser;
@@ -57,11 +58,11 @@ class _UserState extends State<User> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _searchBar(),
-      body: RefreshIndicator(
-        onRefresh: fetchUsers,
-        child: _buildUserList(),
-      ),
+        appBar: _searchBar(),
+        body: RefreshIndicator(
+          onRefresh: fetchUsers,
+          child: _buildUserList(),
+        ),
         floatingActionButton: FloatingActionButton(
             backgroundColor: Color.fromARGB(255, 31, 60, 114),
             child: Icon(Icons.add),
@@ -73,7 +74,8 @@ class _UserState extends State<User> {
               });
             }));
   }
- Future<bool?> _navigateToTeacherAddScreen() async {
+
+  Future<bool?> _navigateToTeacherAddScreen() async {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -86,8 +88,6 @@ class _UserState extends State<User> {
     }
     return false;
   }
-
-  
 
   AppBar _searchBar() {
     return AppBar(
@@ -142,6 +142,7 @@ class _UserState extends State<User> {
   }
 
   Widget _buildUserItem(int index) {
+    TeacherInformationObject teacher = _userDisplay[index];
     Size screenSize = MediaQuery.of(context).size;
     double screenWidth = screenSize.width;
     double screenHeight = screenSize.height;
@@ -149,55 +150,121 @@ class _UserState extends State<User> {
       child: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(
-        children: [
-          ListTile(
-             leading: Container(
-              width: screenHeight/12, 
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(8), // Bo góc của khung ảnh
-                child: Image.network(
-                  _userDisplay[index].image.toString(),
-                  fit: BoxFit.fill,
+          children: [
+            ListTile(
+              leading: Container(
+                width: screenHeight / 12,
+                child: ClipRRect(
+                  borderRadius:
+                      BorderRadius.circular(8), // Bo góc của khung ảnh
+                  child: Image.network(
+                    _userDisplay[index].image.toString(),
+                    fit: BoxFit.fill,
+                  ),
                 ),
               ),
-            ),
-            title: Text(_userDisplay[index].teacher_Name.toString()),
-            subtitle: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        UserDetail(user: _userDisplay[index],),
+              title: Text(_userDisplay[index].teacher_Name.toString()),
+              subtitle: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => UserDetail(
+                        user: _userDisplay[index],
+                      ),
+                    ),
+                  );
+                },
+                child: const Text(
+                  'Xem chi tiết',
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 31, 60, 114),
+                    fontWeight: FontWeight.bold,
                   ),
-                );
-              },
-              child: const Text(
-                'Xem chi tiết',
+                ),
+                onLongPress: () {
+                  _showDeleteConfirmationDialog(teacher).then((shouldReload) {
+                    if (shouldReload == true) {
+                      fetchUsers(); // Load lại trạng thái sau khi xóa giác viên
+                    }
+                  });
+                },
+              ),
+              trailing: Image.asset(
+                (() {
+                  if (_userDisplay[index].status == 1) {
+                    return 'assets/Gif_Status/user-connect.gif';
+                  } else if (_userDisplay[index].status == 2) {
+                    return 'assets/Gif_Status/teacher.gif';
+                  } else {
+                    return 'assets/Gif_Status/default.gif'; // Hình ảnh mặc định nếu không thỏa điều kiện
+                  }
+                })(),
+                width: 30,
+                height: 30,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<bool?> _showDeleteConfirmationDialog(
+      TeacherInformationObject teacher) {
+    return showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Text(
+            'Xóa giáo viên',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          backgroundColor: Color.fromARGB(255, 31, 60, 114),
+          content: Text(
+            'Bạn có chắc chắn muốn xóa giáo viên này?',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text(
+                'Hủy',
                 style: TextStyle(
-                  color: Color.fromARGB(255, 31, 60, 114),
+                  color: Colors.white,
+                  fontSize: 16,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+            ),
+            TextButton(
+              child: Text(
+                'Xóa',
+                style: TextStyle(
+                  color: Colors.red,
+                  fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
               ),
+              onPressed: () async {
+                TeacherInformationProvider.deleteTeacher(teacher.id!);
+                Navigator.of(context).pop(true);
+              },
             ),
-            trailing: Image.asset(
-  (() {
-    if (_userDisplay[index].status == 1) {
-      return 'assets/Gif_Status/user-connect.gif';
-    } else if (_userDisplay[index].status == 2) {
-      return 'assets/Gif_Status/teacher.gif';
-    } else {
-      return 'assets/Gif_Status/default.gif'; // Hình ảnh mặc định nếu không thỏa điều kiện
-    }
-  })(),
-  width: 30,
-  height: 30,
-)
-          ),
-        ],
-      ),
-      )
+          ],
+        );
+      },
     );
   }
 }
-

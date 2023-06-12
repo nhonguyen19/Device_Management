@@ -4,7 +4,6 @@ import 'package:devide_manager/object/ConfigurationObject.dart';
 import 'package:devide_manager/object/ConfigurationSpecificationObject.dart';
 import 'package:devide_manager/object/DeviceObject.dart';
 import 'package:devide_manager/object/TypeOfDeviceObject.dart';
-import 'package:devide_manager/widget/GetTypeOfDevice.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
