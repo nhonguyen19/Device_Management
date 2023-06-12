@@ -2,6 +2,7 @@ import 'package:devide_manager/object/DeviceObject.dart';
 import 'package:devide_manager/provider/api_Device.dart';
 import 'package:devide_manager/object/TeacherInformationObject.dart';
 import 'package:devide_manager/provider/api_Teacher_Information.dart';
+import 'package:devide_manager/ui/Add_Teacher.dart';
 import 'package:devide_manager/ui/DeviceDetails.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:devide_manager/ui/Login.dart';
@@ -31,7 +32,7 @@ class _UserState extends State<User> {
     super.initState();
     fetchUsers();
   }
-
+ 
   Future<void> fetchUsers() async {
     try {
       if(!isRefresh){
@@ -61,8 +62,32 @@ class _UserState extends State<User> {
         onRefresh: fetchUsers,
         child: _buildUserList(),
       ),
-    );
+        floatingActionButton: FloatingActionButton(
+            backgroundColor: Color.fromARGB(255, 31, 60, 114),
+            child: Icon(Icons.add),
+            onPressed: () {
+              _navigateToTeacherAddScreen().then((shouldReload) {
+                if (shouldReload == true) {
+                  fetchUsers();
+                }
+              });
+            }));
   }
+ Future<bool?> _navigateToTeacherAddScreen() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddTeacher(),
+      ),
+    );
+
+    if (result == true) {
+      return true;
+    }
+    return false;
+  }
+
+  
 
   AppBar _searchBar() {
     return AppBar(
