@@ -3,14 +3,22 @@ class TypeOfDiviceObject {
   String? Type_Of_Device_Name;
   String? Image;
   String? icon;
+  int? status;
 
-  TypeOfDiviceObject({this.Type_Of_Device_ID, this.Type_Of_Device_Name,this.Image});
+  TypeOfDiviceObject({
+    this.Type_Of_Device_ID,
+    this.Type_Of_Device_Name,
+    this.Image,
+    this.icon,
+    this.status
+    });
 
   TypeOfDiviceObject.fromJson(Map<String, dynamic> json) {
     Type_Of_Device_ID = json['Type_Of_Device_ID'];
     Type_Of_Device_Name = json['Type_Of_Device_Name'];
     Image = json['Image'];
     icon = json['Icon'];
+    status=json['Status'];
   }
 
   Map<String, dynamic> toJson() {
@@ -19,6 +27,7 @@ class TypeOfDiviceObject {
     data['Type_Of_Device_ID'] = Type_Of_Device_Name;
     data['Image'] = Image;
     data['Icon'] = icon;
+    data['Status'] = status;
     return data;
   }
 }

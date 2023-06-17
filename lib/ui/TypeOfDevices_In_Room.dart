@@ -1,8 +1,10 @@
+import 'package:devide_manager/object/BatchOfGoodObject.dart';
 import 'package:devide_manager/object/BrandObject.dart';
 import 'package:devide_manager/object/ConfigurationDetailsObject.dart';
 import 'package:devide_manager/object/ConfigurationObject.dart';
 import 'package:devide_manager/object/ConfigurationSpecificationObject.dart';
 import 'package:devide_manager/object/DeviceObject.dart';
+import 'package:devide_manager/object/FacultyOject.dart';
 import 'package:devide_manager/object/RoomObject.dart';
 import 'package:devide_manager/object/SupplierObject.dart';
 import 'package:devide_manager/object/TypeOfDeviceObject.dart';
@@ -22,6 +24,9 @@ import 'Devices.dart';
 class Type_Of_Device_In_Room_Screen extends StatefulWidget {
   RoomObject room;
   List<DeviceObject> listDevice;
+  List<BatchOfGoodObject> listBatchOfGood=[];
+  List<RoomObject> listRoom = [];
+  List<FacultyObject> listFaculty=[];
   List<TypeOfDiviceObject> listTypeOfDivice;
   List<BrandObject> listBrand ;
   List<SupplierObject> listSuppliers;
@@ -32,33 +37,42 @@ class Type_Of_Device_In_Room_Screen extends StatefulWidget {
       {Key? key,
       required this.room,
       required this.listDevice,
+      required this.listBatchOfGood,
+      required this.listRoom,
+      required this.listFaculty,
       required this.listTypeOfDivice,
-    required this.listBrand,
-    required this.listSuppliers,
-    required this.listConfiguration,
-    required this.listConfigurationDetails,
-    required this.listConfigurationSpecification
-      });
+      required this.listBrand,
+      required this.listSuppliers,
+      required this.listConfiguration,
+      required this.listConfigurationDetails,
+      required this.listConfigurationSpecification});
 
   @override
   _Type_Of_Device_In_Room_Screen_State createState() =>
       _Type_Of_Device_In_Room_Screen_State(
-          room: room,
-          listDevice: listDevice,
-          listTypeOfDivice: listTypeOfDivice,
-          listBrand: listBrand,
+        room: room,
+        listBatchOfGood: listBatchOfGood,
+        listRoom: listRoom,
+        listFaculty:listFaculty,
+        listDevice: listDevice,
+        listTypeOfDivice: listTypeOfDivice,
+        listBrand: listBrand,
         listSuppliers: listSuppliers,
-        listConfiguration:listConfiguration,
+        listConfiguration: listConfiguration,
         listConfigurationDetails: listConfigurationDetails,
-        listConfigurationSpecification: listConfigurationSpecification,);
+        listConfigurationSpecification: listConfigurationSpecification,
+      );
 }
 
 class _Type_Of_Device_In_Room_Screen_State
     extends State<Type_Of_Device_In_Room_Screen> {
   RoomObject room;
   List<DeviceObject> listDevice;
+  List<BatchOfGoodObject> listBatchOfGood=[];
+  List<RoomObject> listRoom = [];
+  List<FacultyObject> listFaculty=[];
   List<TypeOfDiviceObject> listTypeOfDivice;
-    List<BrandObject> listBrand ;
+  List<BrandObject> listBrand ;
   List<SupplierObject> listSuppliers;
   List<ConfigurationObject> listConfiguration;
   List<ConfigurationDetailsObject> listConfigurationDetails ;
@@ -72,12 +86,15 @@ class _Type_Of_Device_In_Room_Screen_State
       {Key? key,
       required this.room,
       required this.listDevice,
+      required this.listBatchOfGood,
+      required this.listRoom,
+      required this.listFaculty,
       required this.listTypeOfDivice,
-    required this.listBrand,
-    required this.listSuppliers,
-    required this.listConfiguration,
-    required this.listConfigurationDetails,
-    required this.listConfigurationSpecification});
+      required this.listBrand,
+      required this.listSuppliers,
+      required this.listConfiguration,
+      required this.listConfigurationDetails,
+      required this.listConfigurationSpecification});
   bool isRefresh = false;
   @override
   void initState() {
@@ -235,20 +252,23 @@ class _Type_Of_Device_In_Room_Screen_State
                    Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => DevicePage(
-                              bath:0,
-                              typeOfDevice: _type_Of_Devices_Display[index].Type_Of_Device_ID!,
-                              room: room.id!,
-                              listDevice: listDevice,
-                              listTypeOfDivice: listTypeOfDivice,
-                              listBrand: listBrand,
-                              listSuppliers: listSuppliers,
-                              listConfiguration:listConfiguration,
-                              listConfigurationDetails:
-                                  listConfigurationDetails,
-                              listConfigurationSpecification:
-                                  listConfigurationSpecification,
-                            ),
+                      builder: (context) => DevicePage(
+                        bath: 0,
+                        typeOfDevice:
+                            _type_Of_Devices_Display[index].Type_Of_Device_ID!,
+                        room: room.id!,
+                        listBatchOfGood: listBatchOfGood,
+                        listRoom: listRoom,
+                        listFaculty: listFaculty,
+                        listDevice: listDevice,
+                        listTypeOfDivice: listTypeOfDivice,
+                        listBrand: listBrand,
+                        listSuppliers: listSuppliers,
+                        listConfiguration: listConfiguration,
+                        listConfigurationDetails: listConfigurationDetails,
+                        listConfigurationSpecification:
+                            listConfigurationSpecification,
+                      ),
                           ),
                         );
                 },

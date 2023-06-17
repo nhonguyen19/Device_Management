@@ -1,5 +1,8 @@
+import 'package:devide_manager/object/BatchOfGoodObject.dart';
 import 'package:devide_manager/object/ConfigurationObject.dart';
 import 'package:devide_manager/object/DeviceObject.dart';
+import 'package:devide_manager/object/FacultyOject.dart';
+import 'package:devide_manager/object/RoomObject.dart';
 import 'package:devide_manager/provider/api_Device.dart';
 import 'package:devide_manager/object/TypeOfDeviceObject.dart';
 import 'package:devide_manager/provider/api_Type_Of_Device.dart';
@@ -22,6 +25,9 @@ class DevicePage extends StatefulWidget {
   int typeOfDevice;
   int room; 
   int bath;
+  List<BatchOfGoodObject> listBatchOfGood=[];
+  List<RoomObject> listRoom = [];
+  List<FacultyObject> listFaculty=[];
   List<DeviceObject> listDevice =[];
   List<TypeOfDiviceObject> listTypeOfDivice=[];
   List<BrandObject> listBrand = [];
@@ -35,6 +41,9 @@ class DevicePage extends StatefulWidget {
       required this.bath,
       required this.typeOfDevice,
       required this.room,
+      required this.listBatchOfGood,
+      required this.listRoom,
+      required this.listFaculty,
       required this.listDevice,
       required this.listTypeOfDivice,
       required this.listBrand,
@@ -44,7 +53,20 @@ class DevicePage extends StatefulWidget {
       required this.listConfigurationSpecification});
 
   @override
-  _DeviceState createState() => _DeviceState(bath:bath,typeOfDevice:typeOfDevice,room:room,listDevice:listDevice,listTypeOfDivice: listTypeOfDivice,listBrand:listBrand,listSuppliers:listSuppliers,listConfigurationDetails:listConfigurationDetails,listConfigurationSpecification:listConfigurationSpecification,listConfiguration:listConfiguration);
+  _DeviceState createState() => _DeviceState(
+      bath: bath,
+      typeOfDevice: typeOfDevice,
+      room: room,
+      listBatchOfGood: listBatchOfGood,
+      listRoom: listRoom,
+      listFaculty: listFaculty,
+      listDevice: listDevice,
+      listTypeOfDivice: listTypeOfDivice,
+      listBrand: listBrand,
+      listSuppliers: listSuppliers,
+      listConfigurationDetails: listConfigurationDetails,
+      listConfigurationSpecification: listConfigurationSpecification,
+      listConfiguration: listConfiguration);
 }
 
 class _DeviceState extends State<DevicePage> {
@@ -52,6 +74,9 @@ class _DeviceState extends State<DevicePage> {
   int typeOfDevice;
   int room; 
   List<DeviceObject> listDevice =[];
+  List<BatchOfGoodObject> listBatchOfGood=[];
+  List<RoomObject> listRoom = [];
+  List<FacultyObject> listFaculty=[];
   List<TypeOfDiviceObject> listTypeOfDivice=[];
   List<BrandObject> listBrand = [];
   List<SupplierObject> listSuppliers = [];
@@ -67,6 +92,9 @@ class _DeviceState extends State<DevicePage> {
       required this.bath,
       required this.typeOfDevice,
       required this.room,
+      required this.listBatchOfGood,
+      required this.listRoom,
+      required this.listFaculty,
       required this.listDevice,
       required this.listTypeOfDivice,
       required this.listBrand,
@@ -125,7 +153,13 @@ class _DeviceState extends State<DevicePage> {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => AddDeviceScreen(listDevice:listDevice,
+        builder: (context) => AddDeviceScreen(
+           listSuppliers: listSuppliers,
+      listBatchOfGood: listBatchOfGood,
+      listRoom: listRoom,
+      listFaculty: listFaculty,
+      listBrand: listBrand,
+        listDevice:listDevice,
         listConfiguration: listConfiguration,
         listConfigurationDetails: listConfigurationDetails,
         listTypeOfDivice: listTypeOfDivice,),

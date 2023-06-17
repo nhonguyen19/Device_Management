@@ -362,6 +362,8 @@ class _HomePageState extends State<HomePage> {
                       MaterialPageRoute(
                         builder: (context) => RoomScreen(
                           listRoom: listRoom,
+                          listFaculty: listFaculty,
+                          listBatchOfGood: listBatchOfGood,
                           listDevice: listDevice,
                           listTypeOfDivice: listTypeOfDivice,
                           listBrand: listBrand,
@@ -389,6 +391,8 @@ class _HomePageState extends State<HomePage> {
                       MaterialPageRoute(
                         builder: (context) => Batch_Of_GoodsScreen(
                           listBatchOfGood: listBatchOfGood,
+                          listRoom: listRoom,
+                          listFaculty: listFaculty,
                           listDevice: listDevice,
                           listTypeOfDivice: listTypeOfDivice,
                           listBrand: listBrand,
@@ -511,6 +515,9 @@ class _HomePageState extends State<HomePage> {
                               bath:0,
                               typeOfDevice: 0,
                               room: 0,
+                              listBatchOfGood: listBatchOfGood,
+                              listRoom: listRoom,
+                              listFaculty: listFaculty,
                               listDevice: listDevice,
                               listTypeOfDivice: listTypeOfDivice,
                               listBrand: listBrand,
@@ -726,6 +733,9 @@ class _HomePageState extends State<HomePage> {
                               bath:0,
                               typeOfDevice: id,
                               room: 0,
+                              listBatchOfGood: listBatchOfGood,
+                              listRoom: listRoom,
+                              listFaculty: listFaculty,
                               listDevice: listDevice,
                               listTypeOfDivice: listTypeOfDivice,
                               listBrand: listBrand,

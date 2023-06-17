@@ -1,5 +1,7 @@
 import 'package:devide_manager/object/ConfigurationObject.dart';
 import 'package:devide_manager/object/DeviceObject.dart';
+import 'package:devide_manager/object/FacultyOject.dart';
+import 'package:devide_manager/object/RoomObject.dart';
 import 'package:devide_manager/provider/api_Batch_Of_Goods.dart';
 import 'package:devide_manager/provider/api_Configuration.dart';
 import 'package:devide_manager/provider/api_Device.dart';
@@ -26,6 +28,8 @@ import '../object/BatchOfGoodObject.dart';
 class Batch_Of_GoodsScreen extends StatefulWidget {
   List<DeviceObject> listDevice =[];
   List<BatchOfGoodObject> listBatchOfGood ;
+  List<RoomObject> listRoom = [];
+  List<FacultyObject> listFaculty=[];
   List<TypeOfDiviceObject> listTypeOfDivice=[];
   List<BrandObject> listBrand = [];
   List<SupplierObject> listSuppliers = [];
@@ -37,6 +41,8 @@ class Batch_Of_GoodsScreen extends StatefulWidget {
       {Key? key,
       required this.listBatchOfGood,
       required this.listDevice,
+      required this.listRoom,
+      required this.listFaculty,
       required this.listTypeOfDivice,
       required this.listBrand,
       required this.listSuppliers,
@@ -45,12 +51,24 @@ class Batch_Of_GoodsScreen extends StatefulWidget {
       required this.listConfigurationSpecification});
 
   @override
-  _Batch_Of_GoodsState createState() => _Batch_Of_GoodsState(listDevice:listDevice,listBatchOfGood: listBatchOfGood,listTypeOfDivice: listTypeOfDivice,listBrand:listBrand,listSuppliers:listSuppliers,listConfigurationDetails:listConfigurationDetails,listConfigurationSpecification:listConfigurationSpecification,listConfiguration:listConfiguration);
+  _Batch_Of_GoodsState createState() => _Batch_Of_GoodsState(
+      listDevice: listDevice,
+      listBatchOfGood: listBatchOfGood,
+      listRoom: listRoom,
+      listFaculty:listFaculty,
+      listTypeOfDivice: listTypeOfDivice,
+      listBrand: listBrand,
+      listSuppliers: listSuppliers,
+      listConfigurationDetails: listConfigurationDetails,
+      listConfigurationSpecification: listConfigurationSpecification,
+      listConfiguration: listConfiguration);
 }
 
 class _Batch_Of_GoodsState extends State<Batch_Of_GoodsScreen> {
   List<DeviceObject> listDevice ;
   List<BatchOfGoodObject> listBatchOfGood ;
+  List<RoomObject> listRoom = [];
+  List<FacultyObject> listFaculty=[];
   List<TypeOfDiviceObject> listTypeOfDivice;
   List<BrandObject> listBrand ;
   List<SupplierObject> listSuppliers ;
@@ -65,6 +83,8 @@ class _Batch_Of_GoodsState extends State<Batch_Of_GoodsScreen> {
       {Key? key,
       required this.listBatchOfGood,
       required this.listDevice,
+      required this.listRoom,
+      required this.listFaculty,
       required this.listTypeOfDivice,
       required this.listBrand,
       required this.listSuppliers,
@@ -111,22 +131,22 @@ Future<void> fetchBatchOfGood() async {
       );
     }
   }
-  Future<bool?> _navigateToDeviceAddScreen() async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => AddDeviceScreen(listDevice:listDevice,
-        listConfiguration: listConfiguration,
-        listConfigurationDetails: listConfigurationDetails,
-        listTypeOfDivice: listTypeOfDivice,),
-      ),
-    );
+  // Future<bool?> _navigateToDeviceAddScreen() async {
+  //   final result = await Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (context) => AddDeviceScreen(listDevice:listDevice,
+  //       listConfiguration: listConfiguration,
+  //       listConfigurationDetails: listConfigurationDetails,
+  //       listTypeOfDivice: listTypeOfDivice,),
+  //     ),
+  //   );
 
-    if (result == true) {
-      return true;
-    }
-    return false;
-  }
+  //   if (result == true) {
+  //     return true;
+  //   }
+  //   return false;
+  // }
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -139,11 +159,11 @@ Future<void> fetchBatchOfGood() async {
             backgroundColor: Color.fromARGB(255, 31, 60, 114),
             child: Icon(Icons.add),
             onPressed: () {
-              _navigateToDeviceAddScreen().then((shouldReload) {
-                if (shouldReload == true) {
-                  fetchBatchOfGood();
-                }
-              });
+              // _navigateToDeviceAddScreen().then((shouldReload) {
+              //   if (shouldReload == true) {
+              //     fetchBatchOfGood();
+              //   }
+              // });
             }));
     
   }
@@ -234,6 +254,9 @@ Future<void> fetchBatchOfGood() async {
                               bath:_batchOfGoodDisplay[index].id!,
                               typeOfDevice: 0,
                               room: 0,
+                              listBatchOfGood: listBatchOfGood,
+                              listRoom: listRoom,
+                              listFaculty:listFaculty,
                               listDevice: listDevice,
                               listTypeOfDivice: listTypeOfDivice,
                               listBrand: listBrand,

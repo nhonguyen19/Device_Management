@@ -1,8 +1,13 @@
 import 'dart:io';
+import 'package:devide_manager/object/BatchOfGoodObject.dart';
+import 'package:devide_manager/object/BrandObject.dart';
 import 'package:devide_manager/object/ConfigurationDetailsObject.dart';
 import 'package:devide_manager/object/ConfigurationObject.dart';
 import 'package:devide_manager/object/ConfigurationSpecificationObject.dart';
 import 'package:devide_manager/object/DeviceObject.dart';
+import 'package:devide_manager/object/FacultyOject.dart';
+import 'package:devide_manager/object/RoomObject.dart';
+import 'package:devide_manager/object/SupplierObject.dart';
 import 'package:devide_manager/object/TypeOfDeviceObject.dart';
 import 'package:devide_manager/widget/GetTypeOfDevice.dart';
 import 'package:flutter/material.dart';
@@ -10,12 +15,22 @@ import 'package:image_picker/image_picker.dart';
 
 class AddDeviceScreen extends StatefulWidget {
   List<DeviceObject> listDevice;
+  List<SupplierObject> listSuppliers;
+  List<BatchOfGoodObject> listBatchOfGood;
+  List<RoomObject> listRoom;
+  List<FacultyObject> listFaculty;
+  List<BrandObject> listBrand;
   List<TypeOfDiviceObject> listTypeOfDivice;
   List<ConfigurationObject> listConfiguration;
   List<ConfigurationDetailsObject> listConfigurationDetails;
   AddDeviceScreen(
       {super.key,
       required this.listDevice,
+      required this.listSuppliers,
+      required this.listBatchOfGood,
+      required this.listRoom,
+      required this.listFaculty,
+      required this.listBrand,
       required this.listTypeOfDivice,
       required this.listConfiguration,
       required this.listConfigurationDetails});
@@ -23,6 +38,11 @@ class AddDeviceScreen extends StatefulWidget {
   @override
   _AddDeviceScreenState createState() => _AddDeviceScreenState(
       listDevice: listDevice,
+      listSuppliers: listSuppliers,
+      listBatchOfGood: listBatchOfGood,
+      listRoom: listRoom,
+      listFaculty: listFaculty,
+      listBrand: listBrand,
       listTypeOfDivice: listTypeOfDivice,
       listConfiguration:listConfiguration,
       listConfigurationDetails: listConfigurationDetails,
@@ -30,10 +50,38 @@ class AddDeviceScreen extends StatefulWidget {
 }
 
 class _AddDeviceScreenState extends State<AddDeviceScreen> {
+  //Danh sách được tryền vào
   List<DeviceObject> listDevice;
+  List<SupplierObject> listSuppliers;
+  List<BatchOfGoodObject> listBatchOfGood;
+  List<RoomObject> listRoom;
+  List<FacultyObject> listFaculty;
+  List<BrandObject> listBrand;
   List<TypeOfDiviceObject> listTypeOfDivice;
   List<ConfigurationObject> listConfiguration;
   List<ConfigurationDetailsObject> listConfigurationDetails;
+  
+  // DropDownMenu
+  // 1. Loại thiết bị
+  List<Map<String, dynamic>> typeOfDeviceOptions = [];
+  int selectedTypeOfDivice = 1;
+  // 2. Nhà cung cấp
+  List<Map<String, dynamic>> supplierOptions = [];
+  int selectedSupplier = 1;
+  // 3. Lô hàng
+  List<Map<String, dynamic>> batchOfGoodOptions = [];
+   int selectedBatchOfGood = 1;
+  // 4. Phòng
+  List<Map<String, dynamic>> roomOptions = [];
+   int selectedRoom = 1;
+  // 5. Khoa
+  List<Map<String, dynamic>> facultyOptions = [];
+   int selectedFaculty = 1;
+  // 5. Thương hiệu
+  List<Map<String, dynamic>> brandOptions = [];
+  int selectedBrand = 1;
+
+
   List<ConfigurationObject> tempListConfiguration=[];
   List<ConfigurationDetailsObject> tempListConfigurationDetails=[];
   List<ConfigurationSpecificationObject> inputListConfigurationSpecification=[];
@@ -45,26 +93,87 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
   String? imagePath ;
   _AddDeviceScreenState(
       {required this.listDevice,
+      required this.listSuppliers,
+      required this.listBatchOfGood,
+      required this.listRoom,
+      required this.listFaculty,
+      required this.listBrand,
       required this.listTypeOfDivice,
       required this.listConfiguration,
       required this.listConfigurationDetails});
   final _formKey = GlobalKey<FormState>();
   File? _imageFile;
-   List<Map<String, dynamic>> typeOfDeviceOptions = [];
-   int selectedTypeOfDivice = 1;
+  
   void initState() {
   super.initState();
   GetTypeOfDevice();
+  GetSupplier();
+  GetBatchOfGoodOptions();
+  GetRoom();
+  GetFaculty();
+  GetBrand();
 }
-
-  Future<void> GetTypeOfDevice() async{
-    
-    for(var item in listTypeOfDivice){
-       Map<String, dynamic> addTypeOfDevice = {'value' : item.Type_Of_Device_ID,'label':item.Type_Of_Device_Name};
-       typeOfDeviceOptions.add(addTypeOfDevice);
+  //Truyền danh sách nhà cung cấp còn hoạt đông vô Map
+  Future<void> GetSupplier() async{ 
+    for(var item in listSuppliers){
+      // if(item.status == 1){
+        Map<String, dynamic> addsupplier = {'value' : item.id,'label':item.name};
+       supplierOptions.add(addsupplier);
+      // }
     }
 
   }
+  Future<void> GetBatchOfGoodOptions() async{ 
+    for(var item in listBatchOfGood){
+      if(item.status == 1){
+         Map<String, dynamic> addbatchOfGood = {'value' : item.id,'label':item.id.toString()};
+       batchOfGoodOptions.add(addbatchOfGood);
+      }
+    }
+
+  }
+
+  //Truyền danh sách phòng còn hoạt đông vô Map
+   Future<void> GetRoom() async{ 
+    for(var item in listRoom){
+      if(item.status == 1){
+         Map<String, dynamic> addRoom = {'value' : item.id,'label':item.name};
+       roomOptions.add(addRoom);
+      }
+    }
+  }
+
+  //Truyền danh sách khoa còn hoạt đông vô Map
+  Future<void> GetFaculty() async{  
+    for(var item in listFaculty){
+      if(item.status == 1){
+         Map<String, dynamic> addFaculty = {'value' : item.facultyID,'label':item.facultyName};
+       facultyOptions.add(addFaculty);
+      }
+    }
+  }
+
+  //Truyền danh sách thương hiệu còn hoạt đông vô Map
+  Future<void> GetBrand() async{  
+    for(var item in listBrand){
+      if(item.status == 1){
+         Map<String, dynamic> addBrand = {'value' : item.id,'label':item.name};
+       brandOptions.add(addBrand);
+      }
+    }
+  }
+
+//Truyền danh sách loại thiết bị còn hoạt đông vô Map
+  Future<void> GetTypeOfDevice() async{
+    for(var item in listTypeOfDivice){
+      if(item.status == 1){
+         Map<String, dynamic> addTypeOfDevice = {'value' : item.Type_Of_Device_ID,'label':item.Type_Of_Device_Name};
+       typeOfDeviceOptions.add(addTypeOfDevice);
+      }
+    }
+  }
+
+  // Lấy các cấu hình tương ứng với loại thiết bị
   Widget InputTypeOfDevice(int id){
     tempListConfiguration =listConfiguration.where((listConfiguration) => listConfiguration.device_Type_ID == id).toList();
     for(var item in tempListConfiguration){
@@ -74,6 +183,7 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
         }
       }
     }
+
     return tempListConfigurationDetails.isNotEmpty
     ? ListView.builder(
         shrinkWrap: true,
@@ -98,6 +208,8 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
       )
     : Container();
   }
+
+  
 
   Widget _buildImagePreview() {
     return Column(
@@ -180,6 +292,8 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
                     }
                   },
                 ),
+
+                //Hiển thị loại thiết bị
                   DropdownButtonFormField<int>(
                 decoration: InputDecoration(
                   labelText: 'Loại thiết bị',
@@ -192,7 +306,7 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
                      tempListConfiguration.clear();
                      tempListConfigurationDetails.clear();
                   setState(() {
-                    selectedTypeOfDivice = value!;
+                    selectedTypeOfDivice = value?? 1;
                   });
                 },
                 items: typeOfDeviceOptions.map((option) {
@@ -202,25 +316,118 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
                   );
                 }).toList(),
               ),
-              Container(
-                child: InputTypeOfDevice(selectedTypeOfDivice),
-              ),
-              
-                TextFormField(
-                  decoration: const InputDecoration(labelText: 'Số lượng'),
-                  keyboardType: TextInputType.number,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Vui lòng nhập số lượng';
-                    }
-                    return null;
-                  },
-                  onSaved: (value) {
-                    if (value != null) {
-                      setState(() => _deviceQuantity = int.tryParse(value));
-                    }
-                  },
+
+              // //Hiển thị nhà cung cấp
+                 DropdownButtonFormField<int>(
+                decoration: InputDecoration(
+                  labelText: 'Nhà cung cấp',
+                  labelStyle: TextStyle(
+                    color: Color.fromARGB(255, 31, 60, 114),
+                  ),
                 ),
+                value: selectedSupplier,
+                onChanged: (int? value) {
+                  setState(() {
+                    selectedSupplier = value?? 1;
+                  });
+                },
+                items: supplierOptions.map((option) {
+                  return DropdownMenuItem<int>(
+                    value: option['value'],
+                    child: Text(option['label']),
+                  );
+                }).toList(),
+              ),
+
+              //Hiển thị lô hàng
+               DropdownButtonFormField<int>(
+                decoration: InputDecoration(
+                  labelText: 'Lô hàng',
+                  labelStyle: TextStyle(
+                    color: Color.fromARGB(255, 31, 60, 114),
+                  ),
+                ),
+                value: selectedBatchOfGood,
+                onChanged: (int? value) {
+                  setState(() {
+                    selectedBatchOfGood = value?? 1;
+                  });
+                },
+                items: batchOfGoodOptions.map((option) {
+                  return DropdownMenuItem<int>(
+                    value: option['value'],
+                    child: Text(option['label']),
+                  );
+                }).toList(),
+              ),
+
+               //Hiển thị phòng
+               DropdownButtonFormField<int>(
+                decoration: InputDecoration(
+                  labelText: 'Phòng',
+                  labelStyle: TextStyle(
+                    color: Color.fromARGB(255, 31, 60, 114),
+                  ),
+                ),
+                value: selectedRoom,
+                onChanged: (int? value) {
+                  setState(() {
+                    selectedRoom = value?? 1;
+                  });
+                },
+                items: roomOptions.map((option) {
+                  return DropdownMenuItem<int>(
+                    value: option['value'],
+                    child: Text(option['label']),
+                  );
+                }).toList(),
+              ),
+
+                //Hiển thị phòng
+               DropdownButtonFormField<int>(
+                decoration: InputDecoration(
+                  labelText: 'Khoa phụ trách',
+                  labelStyle: TextStyle(
+                    color: Color.fromARGB(255, 31, 60, 114),
+                  ),
+                ),
+                value: selectedFaculty,
+                onChanged: (int? value) {
+                  setState(() {
+                    selectedFaculty = value?? 1;
+                  });
+                },
+                items: facultyOptions.map((option) {
+                  return DropdownMenuItem<int>(
+                    value: option['value'],
+                    child: Text(option['label']),
+                  );
+                }).toList(),
+              ),
+
+               //Hiển thị thương hiệu
+               DropdownButtonFormField<int>(
+                decoration: InputDecoration(
+                  labelText: 'Thương hiệu',
+                  labelStyle: TextStyle(
+                    color: Color.fromARGB(255, 31, 60, 114),
+                  ),
+                ),
+                value: selectedBrand,
+                onChanged: (int? value) {
+                  setState(() {
+                    selectedBrand = value?? 1;
+                  });
+                },
+                items: brandOptions.map((option) {
+                  return DropdownMenuItem<int>(
+                    value: option['value'],
+                    child: Text(option['label']),
+                  );
+                }).toList(),
+              ),
+
+
                 TextFormField(
                   decoration: const InputDecoration(labelText: 'Mô tả'),
                   validator: (value) {
@@ -235,6 +442,36 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
                     }
                   },
                 ),
+
+                 TextFormField(
+                  decoration: const InputDecoration(labelText: 'Số lượng'),
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Vui lòng nhập số lượng';
+                    }
+                    return null;
+                  },
+                  onSaved: (value) {
+                    if (value != null) {
+                      setState(() => _deviceQuantity = int.tryParse(value));
+                    }
+                  },
+                ),
+                SizedBox(height: 16.0),
+                Container(
+                  alignment: Alignment.topLeft,
+                  child: Text('Cấu hình',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18
+                  ),),
+                ),
+                SizedBox(height: 16.0),
+                Container(
+                child: InputTypeOfDevice(selectedTypeOfDivice),
+              ),
+              
                 const SizedBox(height: 16.0),
                 ElevatedButton(
                   onPressed: () {

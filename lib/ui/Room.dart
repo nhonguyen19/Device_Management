@@ -1,8 +1,10 @@
+import 'package:devide_manager/object/BatchOfGoodObject.dart';
 import 'package:devide_manager/object/BrandObject.dart';
 import 'package:devide_manager/object/ConfigurationDetailsObject.dart';
 import 'package:devide_manager/object/ConfigurationObject.dart';
 import 'package:devide_manager/object/ConfigurationSpecificationObject.dart';
 import 'package:devide_manager/object/DeviceObject.dart';
+import 'package:devide_manager/object/FacultyOject.dart';
 import 'package:devide_manager/object/RoomObject.dart';
 import 'package:devide_manager/object/SupplierObject.dart';
 import 'package:devide_manager/object/TypeOfDeviceObject.dart';
@@ -21,7 +23,9 @@ import 'package:http/http.dart' as http;
 
 class RoomScreen extends StatefulWidget {
   List<RoomObject> listRoom;
+  List<FacultyObject> listFaculty=[];
   List<DeviceObject> listDevice;
+  List<BatchOfGoodObject> listBatchOfGood= [];
   List<TypeOfDiviceObject> listTypeOfDivice;
   List<BrandObject> listBrand ;
   List<SupplierObject> listSuppliers;
@@ -30,8 +34,10 @@ class RoomScreen extends StatefulWidget {
   List<ConfigurationSpecificationObject> listConfigurationSpecification ;
   RoomScreen(
       {Key? key,
-      required this.listRoom,
+    required this.listRoom,
+    required this.listFaculty,
     required this.listDevice,
+    required this.listBatchOfGood,
     required this.listTypeOfDivice,
     required this.listBrand,
     required this.listSuppliers,
@@ -42,7 +48,9 @@ class RoomScreen extends StatefulWidget {
   @override
   _RoomScreenState createState() => _RoomScreenState(
       listRoom: listRoom,
+      listFaculty:listFaculty,
       listDevice: listDevice,
+      listBatchOfGood: listBatchOfGood,
       listTypeOfDivice: listTypeOfDivice,
       listBrand: listBrand,
       listSuppliers: listSuppliers,
@@ -53,7 +61,9 @@ class RoomScreen extends StatefulWidget {
 
 class _RoomScreenState extends State<RoomScreen> {
   List<RoomObject> listRoom;
+  List<FacultyObject> listFaculty=[];
   List<DeviceObject> listDevice;
+  List<BatchOfGoodObject> listBatchOfGood=[];
   List<TypeOfDiviceObject> listTypeOfDivice;
   List<BrandObject> listBrand ;
   List<SupplierObject> listSuppliers;
@@ -66,7 +76,9 @@ class _RoomScreenState extends State<RoomScreen> {
   _RoomScreenState({
     Key? key,
     required this.listRoom,
+    required this.listFaculty,
     required this.listDevice,
+   required this.listBatchOfGood,
     required this.listTypeOfDivice,
     required this.listBrand,
     required this.listSuppliers,
@@ -217,6 +229,9 @@ class _RoomScreenState extends State<RoomScreen> {
     context,
     MaterialPageRoute(
       builder: (context) => Type_Of_Device_In_Room_Screen(
+        listFaculty: listFaculty,
+        listBatchOfGood: listBatchOfGood,
+        listRoom: listRoom,
         listDevice: listDevice,
         listTypeOfDivice: listTypeOfDivice,
         room: _roomsDisplay[index],
