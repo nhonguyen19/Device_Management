@@ -102,7 +102,7 @@ class FacultyProvider {
         final imageUrl = await storageRef.child(fileName).getDownloadURL();
 
         body['Image'] = imageUrl;
-      }else{
+      } else {
         body['Image'] = imagePath;
       }
 
@@ -162,6 +162,7 @@ class FacultyProvider {
       throw Exception('Failed to update status: $error');
     }
   }
+
 // đếm khoa
   static int countActiveFaculties(List<FacultyObject> faculties) {
     List<FacultyObject> activeFaculties =

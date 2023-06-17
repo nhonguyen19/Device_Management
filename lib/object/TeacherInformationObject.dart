@@ -1,4 +1,3 @@
-
 class TeacherInformationObject {
   int? id;
   int? faculty_ID;

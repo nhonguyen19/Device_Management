@@ -34,9 +34,8 @@ class _AddTeacherState extends State<AddTeacher> {
   String selectedGender = 'Nam';
 
   List<Map<String, dynamic>> statusOptions = [
-    {'value': 1, 'label': 'Admin'},
-    {'value': 0, 'label': 'Nghỉ hưu'},
-    {'value': 2, 'label': 'Giáo viên'},
+    {'value': 0, 'label': 'Admin'},
+    {'value': 1, 'label': 'Giáo viên'},
   ];
 
   int selectedStatus = 1;
