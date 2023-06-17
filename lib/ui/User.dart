@@ -1,11 +1,9 @@
-import 'package:devide_manager/object/DeviceObject.dart';
-import 'package:devide_manager/provider/api_Device.dart';
+import 'dart:async';
+
 import 'package:devide_manager/object/TeacherInformationObject.dart';
 import 'package:devide_manager/provider/api_Teacher_Information.dart';
+import 'package:devide_manager/provider/share_preferences.dart';
 import 'package:devide_manager/ui/Add_Teacher.dart';
-import 'package:devide_manager/ui/DeviceDetails.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:devide_manager/ui/Login.dart';
 import 'package:devide_manager/ui/UserDetails.dart';
 
 import 'package:flutter/material.dart';
@@ -17,16 +15,20 @@ class User extends StatefulWidget {
   User({Key? key, required this.listUser});
 
   @override
-  _UserState createState() => _UserState(listUser: listUser);
+  _UserState createState() => _UserState(listUser: listUser) ;
 }
 
 class _UserState extends State<User> {
   List<TeacherInformationObject> listUser = [];
   bool _isSearching = false;
   List<TeacherInformationObject> _user = [];
-  List<TeacherInformationObject> _userDisplay = [];
+  StreamController<List<TeacherInformationObject>> _userStreamController =
+      StreamController<List<TeacherInformationObject>>();
+
   _UserState({Key? key, required this.listUser});
+
   bool isRefresh = false;
+
   @override
   void initState() {
     super.initState();
@@ -42,10 +44,7 @@ class _UserState extends State<User> {
         listUser = await TeacherInformationProvider.fetchTeacherInformation(
             http.Client());
       }
-      setState(() {
-        _user = listUser;
-        _userDisplay = listUser;
-      });
+      _userStreamController.add(listUser);
     } catch (error) {
       print('Lỗi: $error');
       ScaffoldMessenger.of(context).showSnackBar(
@@ -56,23 +55,47 @@ class _UserState extends State<User> {
     }
   }
 
+  @override
+  void dispose() {
+    _userStreamController.close();
+    super.dispose();
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: _searchBar(),
-        body: RefreshIndicator(
-          onRefresh: fetchUsers,
-          child: _buildUserList(),
-        ),
-        floatingActionButton: FloatingActionButton(
-            backgroundColor: Color.fromARGB(255, 31, 60, 114),
-            child: Icon(Icons.add),
-            onPressed: () {
-              _navigateToTeacherAddScreen().then((shouldReload) {
-                if (shouldReload == true) {
-                  fetchUsers();
-                }
-              });
-            }));
+      appBar: _searchBar(),
+      body: StreamBuilder<List<TeacherInformationObject>>(
+        stream: _userStreamController.stream,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            _user = snapshot.data!;
+            return RefreshIndicator(
+              onRefresh: fetchUsers,
+              child: _buildUserList(),
+            );
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text('Lỗi, Vui lòng thử lại sau'),
+            );
+          } else {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Color.fromARGB(255, 31, 60, 114),
+        child: Icon(Icons.add),
+        onPressed: () {
+          _navigateToTeacherAddScreen().then((shouldReload) {
+            if (shouldReload == true) {
+              fetchUsers();
+            }
+          });
+        },
+      ),
+    );
   }
 
   Future<bool?> _navigateToTeacherAddScreen() async {
@@ -95,7 +118,7 @@ class _UserState extends State<User> {
       title: _isSearching
           ? TextField(
               style: TextStyle(color: Colors.white),
-              autofocus: true, // Tự động focus vào TextField khi hiển thị
+              autofocus: true,
               decoration: InputDecoration(
                 hintText: 'Tìm kiếm',
                 hintStyle: TextStyle(color: Colors.white70),
@@ -104,7 +127,7 @@ class _UserState extends State<User> {
               onChanged: (text) {
                 text = text.toLowerCase();
                 setState(() {
-                  _userDisplay = _user.where((listUser) {
+                  _user = listUser.where((listUser) {
                     return listUser.userName!.toLowerCase().contains(text) ||
                         listUser.teacher_Name!.toLowerCase().contains(text) ||
                         listUser.address!.toLowerCase().contains(text) ||
@@ -128,7 +151,7 @@ class _UserState extends State<User> {
   }
 
   Widget _buildUserList() {
-    if (_userDisplay.isEmpty) {
+    if (_user.isEmpty) {
       return Center(
         child: SpinKitChasingDots(
           color: Color.fromARGB(255, 31, 60, 114),
@@ -137,12 +160,13 @@ class _UserState extends State<User> {
       );
     }
     return ListView.builder(
-        itemCount: _userDisplay.length,
-        itemBuilder: (context, index) => _buildUserItem(index));
+      itemCount: _user.length,
+      itemBuilder: (context, index) => _buildUserItem(index),
+    );
   }
 
   Widget _buildUserItem(int index) {
-    TeacherInformationObject teacher = _userDisplay[index];
+    TeacherInformationObject teacher = _user[index];
     Size screenSize = MediaQuery.of(context).size;
     double screenWidth = screenSize.width;
     double screenHeight = screenSize.height;
@@ -151,57 +175,71 @@ class _UserState extends State<User> {
         scrollDirection: Axis.vertical,
         child: Column(
           children: [
-            ListTile(
-              leading: Container(
-                width: screenHeight / 12,
-                child: ClipRRect(
-                  borderRadius:
-                      BorderRadius.circular(8), // Bo góc của khung ảnh
-                  child: Image.network(
-                    _userDisplay[index].image.toString(),
-                    fit: BoxFit.fill,
-                  ),
-                ),
-              ),
-              title: Text(_userDisplay[index].teacher_Name.toString()),
-              subtitle: GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => UserDetail(
-                        user: _userDisplay[index],
-                      ),
+            InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UserDetail(
+                      user: _user[index],
                     ),
-                  );
-                },
-                child: const Text(
-                  'Xem chi tiết',
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 31, 60, 114),
-                    fontWeight: FontWeight.bold,
+                  ),
+                );
+              },
+              onLongPress: () {
+                _showDeleteConfirmationDialog(teacher, context)
+                    .then((shouldReload) {
+                  if (shouldReload == true) {
+                    fetchUsers();
+                  }
+                });
+              },
+              child: ListTile(
+                leading: Container(
+                  width: screenHeight / 12,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.network(
+                      _user[index].image.toString(),
+                      fit: BoxFit.fill,
+                    ),
                   ),
                 ),
-                onLongPress: () {
-                  _showDeleteConfirmationDialog(teacher).then((shouldReload) {
-                    if (shouldReload == true) {
-                      fetchUsers(); // Load lại trạng thái sau khi xóa giác viên
+                title: Text(_user[index].teacher_Name.toString()),
+                subtitle: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => UserDetail(
+                          user: _user[index],
+                        ),
+                      ),
+                    );
+                  },
+                  child: const Text(
+                    'Xem chi tiết',
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 31, 60, 114),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                trailing: Image.asset(
+                  (() {
+                    if (_user[index].status == 1) {
+                      return 'assets/Gif_Status/user-connect.gif';
+                    } else if (_user[index].status == 2) {
+                      return 'assets/Gif_Status/teacher.gif';
+                    } else if (_user[index].status == 0) {
+                      return 'assets/Gif_Status/retired.gif';
+                    } else {
+                      return 'assets/Gif_Status/default.gif';
                     }
-                  });
-                },
-              ),
-              trailing: Image.asset(
-                (() {
-                  if (_userDisplay[index].status == 1) {
-                    return 'assets/Gif_Status/user-connect.gif';
-                  } else if (_userDisplay[index].status == 2) {
-                    return 'assets/Gif_Status/teacher.gif';
-                  } else {
-                    return 'assets/Gif_Status/default.gif'; // Hình ảnh mặc định nếu không thỏa điều kiện
-                  }
-                })(),
-                width: 30,
-                height: 30,
+                  })(),
+                  width: 30,
+                  height: 30,
+                ),
               ),
             ),
           ],
@@ -211,60 +249,109 @@ class _UserState extends State<User> {
   }
 
   Future<bool?> _showDeleteConfirmationDialog(
-      TeacherInformationObject teacher) {
-    return showDialog<bool>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          title: Text(
-            'Xóa giáo viên',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+      TeacherInformationObject teacher, BuildContext context) async {
+    TeacherInformationObject? currentUser = await Preferences.getCurrentUser();
+    bool isAdmin = teacher.status == 1;
+    String name= teacher.teacher_Name.toString();
+   
+       if (currentUser?.status == 1 &&
+        currentUser != null &&
+        currentUser.userName != teacher.userName) {
+      return showDialog<bool>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
             ),
-          ),
-          backgroundColor: Color.fromARGB(255, 31, 60, 114),
-          content: Text(
-            'Bạn có chắc chắn muốn xóa giáo viên này?',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text(
-                'Hủy',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                ),
+            title: Text(
+              'Xóa giáo viên',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
               ),
-              onPressed: () {
-                Navigator.of(context).pop(false);
-              },
             ),
-            TextButton(
-              child: Text(
-                'Xóa',
-                style: TextStyle(
-                  color: Colors.red,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+            backgroundColor: Color.fromARGB(255, 31, 60, 114),
+            content: Text(
+              'Bạn có chắc chắn muốn xóa giáo viên $name?',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
               ),
-              onPressed: () async {
-                TeacherInformationProvider.deleteTeacher(teacher.id!);
-                Navigator.of(context).pop(true);
-              },
             ),
-          ],
-        );
-      },
-    );
+            actions: <Widget>[
+              TextButton(
+                child: Text(
+                  'Hủy',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+              ),
+              TextButton(
+                child: Text(
+                  'Xóa',
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                onPressed: () async {
+                  TeacherInformationProvider.updateStatus(teacher.id!, 0);
+                  Navigator.of(context).pop(true);
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      return showDialog<bool>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: Text(
+              'Không thể xóa giáo viên',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            backgroundColor: Color.fromARGB(255, 31, 60, 114),
+            content: Text(
+              'Bạn không có quyền xóa giáo viên này.Do tài khoản đang được sử dụng, hoặc bạn không phải là Admin ((:',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: Text(
+                  'Đóng',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 }

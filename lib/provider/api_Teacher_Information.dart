@@ -30,6 +30,22 @@ class TeacherInformationProvider {
     }
   }
 
+  static Future<List<TeacherInformationObject>> fetchAdminTeachers(
+      http.Client http) async {
+    String url = Ngrok().api_Teacher_Information;
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      List<TeacherInformationObject> allTeachers =
+          parseTeacherInformation(response.body);
+      List<TeacherInformationObject> adminTeachers =
+          allTeachers.where((teacher) => teacher.status == 1).toList();
+      return adminTeachers;
+    } else {
+      throw Exception('Failed to load');
+    }
+  }
+
 //Thêm giáo viên
   static Future<bool> addTeacher(
     int facultyID,
@@ -173,8 +189,9 @@ class TeacherInformationProvider {
       throw Exception('Failed to update teacher: $error');
     }
   }
+
 //xóa giáo viên
-static Future<bool> deleteTeacher(int id) async {
+  static Future<bool> deleteTeacher(int id) async {
     try {
       Ngrok ngrok = Ngrok();
       final url = Uri.parse('${ngrok.api_Teacher_Information}/$id');
@@ -212,5 +229,4 @@ static Future<bool> deleteTeacher(int id) async {
       throw Exception('Failed to update status: $error');
     }
   }
-
 }
